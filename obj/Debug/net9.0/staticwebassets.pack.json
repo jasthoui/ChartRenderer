@@ -1,0 +1,361 @@
+{
+  "Files": [
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/css/site.css",
+      "PackagePath": "staticwebassets/css/site.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/favicon.ico",
+      "PackagePath": "staticwebassets/favicon.ico"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/area-basic.js",
+      "PackagePath": "staticwebassets/js/charts/area-basic.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/area-inverted.js",
+      "PackagePath": "staticwebassets/js/charts/area-inverted.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/area-stacked.js",
+      "PackagePath": "staticwebassets/js/charts/area-stacked.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/bar-basic.js",
+      "PackagePath": "staticwebassets/js/charts/bar-basic.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/bar-stacked.js",
+      "PackagePath": "staticwebassets/js/charts/bar-stacked.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/bubble-basic.js",
+      "PackagePath": "staticwebassets/js/charts/bubble-basic.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/bubble-packed.js",
+      "PackagePath": "staticwebassets/js/charts/bubble-packed.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/chartRenderer.js",
+      "PackagePath": "staticwebassets/js/charts/chartRenderer.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/column-basic.js",
+      "PackagePath": "staticwebassets/js/charts/column-basic.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/column-range.js",
+      "PackagePath": "staticwebassets/js/charts/column-range.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/column-stacked-grouped.js",
+      "PackagePath": "staticwebassets/js/charts/column-stacked-grouped.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/column-stacked-percentage.js",
+      "PackagePath": "staticwebassets/js/charts/column-stacked-percentage.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/column-stacked.js",
+      "PackagePath": "staticwebassets/js/charts/column-stacked.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/line-basic.js",
+      "PackagePath": "staticwebassets/js/charts/line-basic.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/line-labels.js",
+      "PackagePath": "staticwebassets/js/charts/line-labels.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/pie-basic.js",
+      "PackagePath": "staticwebassets/js/charts/pie-basic.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/pie-donut.js",
+      "PackagePath": "staticwebassets/js/charts/pie-donut.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/pie-semi-donut.js",
+      "PackagePath": "staticwebassets/js/charts/pie-semi-donut.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/scatter-basic.js",
+      "PackagePath": "staticwebassets/js/charts/scatter-basic.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/charts/scatter-jitter.js",
+      "PackagePath": "staticwebassets/js/charts/scatter-jitter.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/js/site.js",
+      "PackagePath": "staticwebassets/js/site.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/LICENSE",
+      "PackagePath": "staticwebassets/lib/bootstrap"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.min.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.min.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.rtl.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.rtl.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.rtl.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.rtl.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.rtl.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.rtl.min.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.rtl.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-grid.rtl.min.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.min.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.min.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.rtl.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.rtl.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.rtl.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.rtl.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.rtl.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.rtl.min.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.rtl.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-reboot.rtl.min.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.min.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.min.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.rtl.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.rtl.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.rtl.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.rtl.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.rtl.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.rtl.min.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap-utilities.rtl.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap-utilities.rtl.min.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.min.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.min.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap.rtl.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.rtl.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap.rtl.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.rtl.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap.rtl.min.css",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.rtl.min.css"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/css/bootstrap.rtl.min.css.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/css/bootstrap.rtl.min.css.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.bundle.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.bundle.js.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.min.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.bundle.min.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.min.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.bundle.min.js.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/js/bootstrap.esm.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.esm.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/js/bootstrap.esm.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.esm.js.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/js/bootstrap.esm.min.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.esm.min.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/js/bootstrap.esm.min.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.esm.min.js.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/js/bootstrap.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/js/bootstrap.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.js.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/js/bootstrap.min.js",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.min.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/bootstrap/dist/js/bootstrap.min.js.map",
+      "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.min.js.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/jquery-validation-unobtrusive/LICENSE.txt",
+      "PackagePath": "staticwebassets/lib/jquery-validation-unobtrusive/LICENSE.txt"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/jquery-validation/LICENSE.md",
+      "PackagePath": "staticwebassets/lib/jquery-validation/LICENSE.md"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/jquery-validation/dist/additional-methods.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation/dist/additional-methods.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/jquery-validation/dist/additional-methods.min.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation/dist/additional-methods.min.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/jquery-validation/dist/jquery.validate.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation/dist/jquery.validate.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/jquery-validation/dist/jquery.validate.min.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation/dist/jquery.validate.min.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/jquery/LICENSE.txt",
+      "PackagePath": "staticwebassets/lib/jquery/LICENSE.txt"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/jquery/dist/jquery.js",
+      "PackagePath": "staticwebassets/lib/jquery/dist/jquery.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/jquery/dist/jquery.min.js",
+      "PackagePath": "staticwebassets/lib/jquery/dist/jquery.min.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/jquery/dist/jquery.min.map",
+      "PackagePath": "staticwebassets/lib/jquery/dist/jquery.min.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/jquery/dist/jquery.slim.js",
+      "PackagePath": "staticwebassets/lib/jquery/dist/jquery.slim.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/jquery/dist/jquery.slim.min.js",
+      "PackagePath": "staticwebassets/lib/jquery/dist/jquery.slim.min.js"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/lib/jquery/dist/jquery.slim.min.map",
+      "PackagePath": "staticwebassets/lib/jquery/dist/jquery.slim.min.map"
+    },
+    {
+      "Id": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/wwwroot/scatter-chart.png",
+      "PackagePath": "staticwebassets/scatter-chart.png"
+    },
+    {
+      "Id": "obj/Debug/net9.0/staticwebassets/msbuild.ChartRendererApp.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj/Debug/net9.0/staticwebassets/msbuild.ChartRendererApp.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net9.0/staticwebassets/msbuild.build.ChartRendererApp.props",
+      "PackagePath": "build\\ChartRendererApp.props"
+    },
+    {
+      "Id": "obj/Debug/net9.0/staticwebassets/msbuild.buildMultiTargeting.ChartRendererApp.props",
+      "PackagePath": "buildMultiTargeting\\ChartRendererApp.props"
+    },
+    {
+      "Id": "obj/Debug/net9.0/staticwebassets/msbuild.buildTransitive.ChartRendererApp.props",
+      "PackagePath": "buildTransitive\\ChartRendererApp.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

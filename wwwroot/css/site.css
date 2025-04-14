@@ -1,0 +1,92 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+.accordion-item {
+  border: none !important;
+}
+
+.accordion-header {
+  border-bottom: none !important;
+}
+
+.accordion-body {
+  border-top: none !important;
+  padding: 0.5rem 1rem;
+}
+
+.accordion-button {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.accordion-button:not(.collapsed) {
+  box-shadow: none !important;
+}
+
+ul.list-unstyled li {
+  position: relative;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease-in-out;
+}
+
+ul.list-unstyled li:hover {
+  background-color: #eef2ff;
+  color: #3b82f6;
+  font-weight: bold;
+}
+
+ul.list-unstyled li::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 100%;
+  background-color: #3b82f6;
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+ul.list-unstyled li:hover::before {
+  opacity: 1;
+}
+
+.chart-link.active {
+  font-weight: bold;
+  color: #0d6efd;
+  background-color: #f0f8ff;
+  border-radius: 4px;
+}

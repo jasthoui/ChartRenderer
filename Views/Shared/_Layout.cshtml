@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ChartsApp</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="d-flex">
+        <div class="card bg-body shadow-lg p-3" style="width: 20%; height: 88vh; position: fixed; left: 1.5%; top: 8%;">
+            <div class="card-header bg-transparent border-0">
+                <a class="link-body-emphasis d-flex align-items-center me-md-auto mb-3 mb-md-0 text-decoration-none" href="/">
+                    <span class="fs-4">Charts Demos</span>
+                </a>
+            </div>
+
+            <div class="card-body d-flex flex-column">
+                <!-- Search Bar -->
+                <div class="input-group mb-3">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search charts..." aria-label="Search charts">
+                </div>
+
+                <!-- Accordion Menu -->
+                <div class="accordion flex-grow-1" role="tablist" id="accordion-1">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#item-1">
+                                <i class="fas fa-chart-line me-2"></i><strong>Line Charts</strong>
+                            </button>
+                        </h2>
+                        <div id="item-1" class="accordion-collapse collapse show" data-bs-parent="#accordion-1">
+                            <div class="accordion-body">
+                                <ul class="list-unstyled">
+                                    <li class="chart-link" data-chart="line-basic">Line Chart</li>
+                                    <li class="chart-link" data-chart="line-labels">With Data Labels</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#item-2">
+                                <i class="fas fa-chart-area me-2"></i><strong>Area Charts</strong>
+                            </button>
+                        </h2>
+                        <div id="item-2" class="accordion-collapse collapse" data-bs-parent="#accordion-1">
+                            <div class="accordion-body">
+                                <ul class="list-unstyled">
+                                    <li class="chart-link" data-chart="area-basic">Area Chart</li>
+                                    <li class="chart-link" data-chart="area-stacked">Stacked Area</li>
+                                    <li class="chart-link" data-chart="area-inverted">Inverted Axes</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#item-3">
+                                <i class="fas fa-chart-column me-2"></i><strong>Column and Bar Charts</strong>
+                            </button>
+                        </h2>
+                        <div id="item-3" class="accordion-collapse collapse" data-bs-parent="#accordion-1">
+                            <div class="accordion-body">
+                                <ul class="list-unstyled">
+                                    <li class="chart-link" data-chart="column-basic">Basic Column</li>
+                                    <li class="chart-link" data-chart="column-stacked">Stacked Column</li> 
+                                    <li class="chart-link" data-chart="column-range">Column Range</li>
+                                    <li class="chart-link" data-chart="column-stacked-grouped">Stacked and Grouped Column</li>
+                                    <li class="chart-link" data-chart="column-stacked-percentage">Stacked Percentage Column</li>
+                                    <li class="chart-link" data-chart="bar-basic">Basic Bar Chart</li>
+                                    <li class="chart-link" data-chart="bar-stacked">Stacked Bar</li>
+                                </ul>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#item-4">
+                                <i class="fas fa-chart-pie me-2"></i><strong>Pie Charts</strong>
+                            </button>
+                        </h2>
+                        <div id="item-4" class="accordion-collapse collapse" data-bs-parent="#accordion-1">
+                            <div class="accordion-body">
+                                <ul class="list-unstyled">
+                                    <li class="chart-link" data-chart="pie-basic">Pie Chart</li>
+                                    <li class="chart-link" data-chart="pie-donut">Donut Chart</li>
+                                    <li class="chart-link" data-chart="pie-semi-donut">Semi Circle Donut</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#item-5">
+                                <img src="scatter-chart.png" width="18" height="18" class="me-2" alt="Scatter Chart Icon"><strong>Scatter and Bubble Charts</strong>
+                            </button>
+                        </h2>
+                        <div id="item-5" class="accordion-collapse collapse" data-bs-parent="#accordion-1">
+                            <div class="accordion-body">
+                                <ul class="list-unstyled">
+                                    <li class="chart-link" data-chart="scatter-basic">Scatter Plot</li>
+                                    <li class="chart-link" data-chart="scatter-jitter">Scatter Plot with Jitter</li>
+                                    <li class="chart-link" data-chart="bubble-basic">Bubble Chart</li>
+                                    <li class="chart-link" data-chart="bubble-packed">Packed Bubble Chart</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="chartContainer" class="d-flex justify-content-center align-items-center" style="width: 100%; height: 93vh; margin-left: 22.5%;">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
