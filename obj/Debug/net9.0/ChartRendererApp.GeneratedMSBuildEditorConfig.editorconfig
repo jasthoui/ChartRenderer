@@ -9,117 +9,117 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = ChartRendererApp
 build_property.RootNamespace = ChartRendererApp
-build_property.ProjectDir = /Users/jastinereyes/Desktop/idk/ChartRendererApp/
+build_property.ProjectDir = C:\Users\jastine.reyes\OneDrive - OpeniT\Desktop\ChartRenderer\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 9.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = /Users/jastinereyes/Desktop/idk/ChartRendererApp
+build_property.MSBuildProjectDirectory = C:\Users\jastine.reyes\OneDrive - OpeniT\Desktop\ChartRenderer
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_AreaBasic.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19BcmVhQmFzaWMuY3NodG1s
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_AreaBasic.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9BcmVhQmFzaWMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_AreaInverted.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19BcmVhSW52ZXJ0ZWQuY3NodG1s
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_AreaInverted.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9BcmVhSW52ZXJ0ZWQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_AreaStacked.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19BcmVhU3RhY2tlZC5jc2h0bWw=
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_AreaStacked.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9BcmVhU3RhY2tlZC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_BarBasic.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19CYXJCYXNpYy5jc2h0bWw=
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_BarBasic.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9CYXJCYXNpYy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_BarStacked.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19CYXJTdGFja2VkLmNzaHRtbA==
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_BarStacked.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9CYXJTdGFja2VkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_BubbleBasic.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19CdWJibGVCYXNpYy5jc2h0bWw=
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_BubbleBasic.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9CdWJibGVCYXNpYy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_BubblePacked.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19CdWJibGVQYWNrZWQuY3NodG1s
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_BubblePacked.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9CdWJibGVQYWNrZWQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_ChartNotFound.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19DaGFydE5vdEZvdW5kLmNzaHRtbA==
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_ChartNotFound.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9DaGFydE5vdEZvdW5kLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_ColumnBasic.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19Db2x1bW5CYXNpYy5jc2h0bWw=
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_ColumnBasic.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9Db2x1bW5CYXNpYy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_ColumnRange.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19Db2x1bW5SYW5nZS5jc2h0bWw=
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_ColumnRange.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9Db2x1bW5SYW5nZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_ColumnStacked.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19Db2x1bW5TdGFja2VkLmNzaHRtbA==
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_ColumnStacked.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9Db2x1bW5TdGFja2VkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_ColumnStackedGrouped.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19Db2x1bW5TdGFja2VkR3JvdXBlZC5jc2h0bWw=
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_ColumnStackedGrouped.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9Db2x1bW5TdGFja2VkR3JvdXBlZC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_ColumnStackedPercentage.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19Db2x1bW5TdGFja2VkUGVyY2VudGFnZS5jc2h0bWw=
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_ColumnStackedPercentage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9Db2x1bW5TdGFja2VkUGVyY2VudGFnZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_LineBasic.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19MaW5lQmFzaWMuY3NodG1s
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_LineBasic.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9MaW5lQmFzaWMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_LineLabels.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19MaW5lTGFiZWxzLmNzaHRtbA==
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_LineLabels.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9MaW5lTGFiZWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_PieBasic.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19QaWVCYXNpYy5jc2h0bWw=
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_PieBasic.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9QaWVCYXNpYy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_PieDonut.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19QaWVEb251dC5jc2h0bWw=
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_PieDonut.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9QaWVEb251dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_PieSemiDonut.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19QaWVTZW1pRG9udXQuY3NodG1s
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_PieSemiDonut.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9QaWVTZW1pRG9udXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_ScatterBasic.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19TY2F0dGVyQmFzaWMuY3NodG1s
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_ScatterBasic.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9TY2F0dGVyQmFzaWMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Charts/_ScatterJitter.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2hhcnRzL19TY2F0dGVySml0dGVyLmNzaHRtbA==
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Charts/_ScatterJitter.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhcnRzXF9TY2F0dGVySml0dGVyLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Home/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9JbmRleC5jc2h0bWw=
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Shared/Error.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0Vycm9yLmNzaHRtbA==
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Shared/_Layout.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/Shared/_ValidationScriptsPartial.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/_ViewImports.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/jastinereyes/Desktop/idk/ChartRendererApp/Views/_ViewStart.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdTdGFydC5jc2h0bWw=
+[C:/Users/jastine.reyes/OneDrive - OpeniT/Desktop/ChartRenderer/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 

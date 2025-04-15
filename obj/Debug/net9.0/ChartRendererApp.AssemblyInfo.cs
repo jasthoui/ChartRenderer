@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ChartRendererApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c1b0ac85e49ffb71f3a85c8c91d8fc5f30fcde5e")]
 [assembly: System.Reflection.AssemblyProductAttribute("ChartRendererApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ChartRendererApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

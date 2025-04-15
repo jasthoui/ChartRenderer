@@ -1,25 +1,32 @@
 {
   "format": 1,
   "restore": {
-    "/Users/jastinereyes/Desktop/idk/ChartRendererApp/ChartRendererApp.csproj": {}
+    "C:\\Users\\jastine.reyes\\OneDrive - OpeniT\\Desktop\\ChartRenderer\\ChartRendererApp.csproj": {}
   },
   "projects": {
-    "/Users/jastinereyes/Desktop/idk/ChartRendererApp/ChartRendererApp.csproj": {
+    "C:\\Users\\jastine.reyes\\OneDrive - OpeniT\\Desktop\\ChartRenderer\\ChartRendererApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/ChartRendererApp.csproj",
+        "projectUniqueName": "C:\\Users\\jastine.reyes\\OneDrive - OpeniT\\Desktop\\ChartRenderer\\ChartRendererApp.csproj",
         "projectName": "ChartRendererApp",
-        "projectPath": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/ChartRendererApp.csproj",
-        "packagesPath": "/Users/jastinereyes/.nuget/packages/",
-        "outputPath": "/Users/jastinereyes/Desktop/idk/ChartRendererApp/obj/",
+        "projectPath": "C:\\Users\\jastine.reyes\\OneDrive - OpeniT\\Desktop\\ChartRenderer\\ChartRendererApp.csproj",
+        "packagesPath": "C:\\Users\\jastine.reyes\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jastine.reyes\\OneDrive - OpeniT\\Desktop\\ChartRenderer\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/Users/jastinereyes/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\jastine.reyes\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -62,7 +69,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.200/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

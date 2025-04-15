@@ -9,7 +9,7 @@ renderColumnChart({
     xField: "team",
     series: ["FA Cup", "BPL", "CL"],
     title: "Major trophies for some English teams",
-    xLabel: "Teams",
+    xLabel: "",
     yLabel: "Count trophies",
     yUnit: "trophies",
     colors: {

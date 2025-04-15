@@ -77,7 +77,7 @@ const ChartRenderers = {
   }) {
     const dims = ChartHelpers.getDimensions(margins, width, height);
     const svg = ChartHelpers.createSVG(containerId, margins, width, height);
-
+  
     // Create scales
     const xDomain = data.map(d => d[xField]);
     const xScale = d3.scalePoint()
@@ -89,8 +89,9 @@ const ChartRenderers = {
       .domain([0, maxY + 5])
       .nice()
       .range([dims.height, 0]);
-
+  
     // Axes
+    // x-axis remains unchanged
     svg.append("g")
       .attr("class", "x axis")
       .attr("transform", `translate(0,${dims.height})`)
@@ -98,29 +99,32 @@ const ChartRenderers = {
       .selectAll("text")
       .attr("transform", "rotate(-45)")
       .style("text-anchor", "end");
-    
+  
+    // Create y-axis and remove the domain line immediately
     svg.append("g")
       .attr("class", "y axis")
       .call(d3.axisLeft(yScale).ticks(6))
-      .call(g => g.select(".domain").remove());
-    
-    // Create initial grid lines
+      .selectAll(".domain")
+      .remove();
+  
+    // Create initial grid lines (grid code unchanged)
     svg.append("g")
       .attr("class", "grid")
       .style("opacity", 0.1)
       .call(d3.axisLeft(yScale).ticks(6).tickSize(-dims.width).tickFormat(""))
       .call(g => g.select(".domain").remove());
-
+  
     const seriesState = series.map(key => ({ key, active: true }));
     const lineFns = {};
-
+  
+    // Create lines, circles, labels, and interaction handlers...
     series.forEach(key => {
       const line = d3.line()
         .x(d => xScale(d[xField]))
         .y(d => yScale(d[key]))
         .curve(d3.curveMonotoneX);
       lineFns[key] = line;
-
+  
       svg.append("path")
         .datum(data)
         .attr("class", `line ${key}`)
@@ -146,7 +150,7 @@ const ChartRenderers = {
             }
           });
         });
-
+  
       svg.selectAll(`circle.${key}`)
         .data(data)
         .enter().append("circle")
@@ -160,7 +164,7 @@ const ChartRenderers = {
           seriesState.forEach(s => {
             if (s.key !== key && s.active) {
               svg.selectAll(`.line.${s.key}`).transition().style("opacity", 0.1);
-              svg.selectAll(`circle.${s.key}`).transition().style("opacity", 0.1);
+              svg.selectAll(`.circle.${s.key}`).transition().style("opacity", 0.1);
               svg.selectAll(`.label-${s.key}`).transition().style("opacity", 0.1);
             }
           });
@@ -177,7 +181,7 @@ const ChartRenderers = {
           });
           ChartHelpers.removeTooltip();
         });
-
+  
       if (showLabels) {
         svg.selectAll(`.label-${key}`)
           .data(data)
@@ -191,7 +195,8 @@ const ChartRenderers = {
           .text(d => `${d[key]}`);
       }
     });
-
+  
+    // Title and axis labels (unchanged)
     if (title) {
       svg.append("text")
         .attr("x", 0)
@@ -209,7 +214,7 @@ const ChartRenderers = {
       .attr("y", dims.height + margins.bottom - 20)
       .style("font-size", "14px")
       .text(xLabel || xField);
-
+  
     svg.append("text")
       .attr("class", "y label")
       .attr("text-anchor", "middle")
@@ -218,7 +223,8 @@ const ChartRenderers = {
       .attr("y", -margins.left + 30)
       .style("font-size", "14px")
       .text(yLabel || yUnit);
-
+  
+    // Legend handling with y-axis update:
     const legendSpacing = 20;
     const legendStartY = dims.height / 2 - (series.length * legendSpacing) / 2;
     const legend = svg.selectAll(".legend")
@@ -261,18 +267,30 @@ const ChartRenderers = {
       
           // Update yScale based on the new maximum value
           yScale.domain([0, newMaxY + 5]).nice();
-          
-          // Update y-axis with a transition and remove the domain line after transition ends
+      
+          // Remove domain line before starting the transition
+          svg.select(".y.axis").selectAll(".domain").remove();
+      
+          // Update the y‑axis with a transition and remove the domain line during and after the transition
           svg.select(".y.axis")
             .transition()
+            .duration(750)
+            .on("start", function() {
+              d3.select(this).selectAll(".domain").remove();
+            })
             .call(d3.axisLeft(yScale).ticks(6))
             .on("end", function() {
               d3.select(this).selectAll(".domain").remove();
             });
-          
-          // Update grid lines to match the new yScale with transition and remove the domain line
+      
+          // Similarly, update grid lines:
+          svg.select(".grid").selectAll(".domain").remove();
           svg.select(".grid")
             .transition()
+            .duration(750)
+            .on("start", function() {
+              d3.select(this).selectAll(".domain").remove();
+            })
             .call(d3.axisLeft(yScale)
               .ticks(6)
               .tickSize(-dims.width)
@@ -280,7 +298,8 @@ const ChartRenderers = {
             .on("end", function() {
               d3.select(this).selectAll(".domain").remove();
             });
-          
+      
+          // Update series elements (lines, circles, labels)
           seriesState.forEach(s => {
             const opacity = s.active ? 1 : 0;
             const display = s.active ? null : "none";
@@ -323,598 +342,629 @@ const ChartRenderers = {
             .attr("display", "none");
         }
       });
-       
+      
       
       legend.append("circle")
-      .attr("class", "legend-circle")
-      .attr("cx", dims.width + 26)
-      .attr("cy", 6)
-      .attr("r", 6)
-      .style("fill", d => colors[d.key] || "steelblue");
-    legend.append("text")
-      .attr("x", dims.width + 40)
-      .attr("y", 6)
-      .attr("dy", ".35em")
-      .text(d => d.key);
+        .attr("class", "legend-circle")
+        .attr("cx", dims.width + 26)
+        .attr("cy", 6)
+        .attr("r", 6)
+        .style("fill", d => colors[d.key] || "steelblue");
+      legend.append("text")
+        .attr("x", dims.width + 40)
+        .attr("y", 6)
+        .attr("dy", ".35em")
+        .text(d => d.key);
   },
 
   renderAreaChart({
-    containerId,
-    data,
-    title = "",
-    xField,
-    yLabel = "",
-    xLabel = "",
-    yUnit = "",
-    series = [],
-    colors = {},
-    showLabels = false,
-    stacked = false,
-    inverted = false,
-    margins = { top: 60, right: 40, bottom: 115, left: 90 },
-    width = 1400,
-    height = 900
-  }) {
-    const safeClassName = name => name.replace(/\s+/g, '-');
-    const dims = ChartHelpers.getDimensions(margins, width - 70, height);
-    const svg = ChartHelpers.createSVG(containerId, margins, width, height);
-    const seriesState = series.map(key => ({ key, active: true }));
-    const activeKeysInit = seriesState.filter(s => s.active).map(s => s.key);
-    const xExtent = d3.extent(data, d => d[xField]);
+  containerId,
+  data,
+  title = "",
+  xField,
+  yLabel = "",
+  xLabel = "",
+  yUnit = "",
+  series = [],
+  colors = {},
+  showLabels = false,
+  stacked = false,
+  inverted = false,
+  margins = { top: 60, right: 40, bottom: 115, left: 90 },
+  width = 1400,
+  height = 900
+}) {
+  const safeClassName = name => name.replace(/\s+/g, '-');
+  const dims = ChartHelpers.getDimensions(margins, width - 70, height);
+  const svg = ChartHelpers.createSVG(containerId, margins, width, height);
+  const seriesState = series.map(key => ({ key, active: true }));
+  const activeKeysInit = seriesState.filter(s => s.active).map(s => s.key);
+  const xExtent = d3.extent(data, d => d[xField]);
 
-    let xScale, yScale;
-    if (!inverted) {
-      xScale = d3.scaleLinear().domain(xExtent).nice().range([0, dims.width]);
-      const maxY = !stacked
-        ? d3.max(data, d => d3.max(activeKeysInit, key => d[key] || 0))
-        : d3.max(d3.stack().keys(activeKeysInit)(data).pop(), d => d[1]);
-        yScale = d3.scaleLinear().domain([0, maxY + 5]).nice().range([dims.height, 0]);
-    } else {
-      const maxY = !stacked
-        ? d3.max(data, d => d3.max(activeKeysInit, key => d[key] || 0))
-        : d3.max(d3.stack().keys(activeKeysInit)(data).pop(), d => d[1]);
-      xScale = d3.scaleLinear().domain([0, maxY + 5]).range([0, dims.width]);
-      yScale = d3.scaleLinear().domain([xExtent[1], xExtent[0]]).range([dims.height, 0]);
-    }
+  let xScale, yScale;
+  if (!inverted) {
+    xScale = d3.scaleLinear().domain(xExtent).nice().range([0, dims.width]);
+    const maxY = !stacked
+      ? d3.max(data, d => d3.max(activeKeysInit, key => d[key] || 0))
+      : d3.max(d3.stack().keys(activeKeysInit)(data).pop(), d => d[1]);
+    yScale = d3.scaleLinear().domain([0, maxY + 5]).nice().range([dims.height, 0]);
+  } else {
+    const maxY = !stacked
+      ? d3.max(data, d => d3.max(activeKeysInit, key => d[key] || 0))
+      : d3.max(d3.stack().keys(activeKeysInit)(data).pop(), d => d[1]);
+    xScale = d3.scaleLinear().domain([0, maxY + 5]).range([0, dims.width]);
+    yScale = d3.scaleLinear().domain([xExtent[1], xExtent[0]]).range([dims.height, 0]);
+  }
 
-    const xAxis = !inverted
+  const xAxis = !inverted
     ? d3.axisBottom(xScale).ticks(8).tickFormat(d3.format("d"))
     : d3.axisBottom(xScale).ticks(8).tickFormat(d3.format("d"));
 
-    svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", !inverted ? `translate(0,${dims.height})` : `translate(0,${dims.height})`)
-      .call(xAxis)
-      .call(g => g.select(".domain").remove());
+  svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", !inverted ? `translate(0,${dims.height})` : `translate(0,${dims.height})`)
+    .call(xAxis)
+    .call(g => g.select(".domain").remove());
 
-    const yAxis = !inverted
-      ? d3.axisLeft(yScale).ticks(8).tickFormat(d3.format("d"))
-      : d3.axisLeft(yScale).ticks(8).tickFormat(d3.format("d"));
+  const yAxis = !inverted
+    ? d3.axisLeft(yScale).ticks(8).tickFormat(d3.format("d"))
+    : d3.axisLeft(yScale).ticks(8).tickFormat(d3.format("d"));
 
-    svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-      .call(g => g.select(".domain").remove());
+  svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
+    .call(g => g.select(".domain").remove());
 
-    svg.append("g")
-      .attr("class", "grid")
-      .style("opacity", 0.1)
-      .call(
-        !inverted
-          ? d3.axisLeft(yScale).ticks(8).tickSize(-dims.width).tickFormat("")
-          : d3.axisBottom(xScale).ticks(8).tickSize(dims.height).tickFormat("")
-      )
-      .call(g => g.select(".domain").remove());
+  svg.append("g")
+    .attr("class", "grid")
+    .style("opacity", 0.1)
+    .call(
+      !inverted
+        ? d3.axisLeft(yScale).ticks(8).tickSize(-dims.width).tickFormat("")
+        : d3.axisBottom(xScale).ticks(8).tickSize(dims.height).tickFormat("")
+    )
+    .call(g => g.select(".domain").remove());
 
+  function showTooltip(event, html) { ChartHelpers.showTooltip(event, html); }
+  function removeTooltip() { ChartHelpers.removeTooltip(); }
 
-    function showTooltip(event, html) { ChartHelpers.showTooltip(event, html); }
-    function removeTooltip() { ChartHelpers.removeTooltip(); }
-
-    function drawAreas() {
-      svg.selectAll(".area-group").remove();
-      svg.selectAll(".circle-group").remove();
-      const areaGroup = svg.append("g").attr("class", "area-group");
-      const activeKeys = seriesState.filter(s => s.active).map(s => s.key);
-
-      if (!inverted) {
-        if (!stacked) {
-          activeKeys.forEach(key => {
-            const safeKey = safeClassName(key);
-            const areaGen = d3.area()
-              .defined(d => d[key] != null)
-              .x(d => xScale(d[xField]))
-              .y0(yScale(0))
-              .y1(d => yScale(d[key]))
-              .curve(d3.curveMonotoneX);
-            areaGroup.append("path")
-              .datum(data)
-              .attr("class", `area ${safeKey}`)
-              .attr("fill", colors[key] || "steelblue")
-              .attr("fill-opacity", 0.6)
-              .attr("stroke", colors[key] || "steelblue")
-              .attr("stroke-width", 2)
-              .attr("d", areaGen);
-          });
-        } else {
-          const stackGen = d3.stack().keys(activeKeys);
-          const stackedData = stackGen(data);
-          areaGroup.selectAll(".area-layer")
-            .data(stackedData)
-            .enter()
-            .append("path")
-            .attr("class", d => `area ${safeClassName(d.key)}`)
-            .attr("fill", d => colors[d.key] || "steelblue")
-            .attr("fill-opacity", 0.6)
-            .attr("stroke", d => colors[d.key] || "steelblue")
-            .attr("stroke-width", 2)
-            .attr("d", d3.area()
-              .x(d => xScale(d.data[xField]))
-              .y0(d => yScale(d[0]))
-              .y1(d => yScale(d[1]))
-              .curve(d3.curveMonotoneX));
-          const circleGroup = svg.append("g").attr("class", "circle-group");
-          stackedData.forEach(layer => {
-            const safeKey = safeClassName(layer.key);
-            circleGroup.selectAll(`.circle-${safeKey}`)
-              .data(layer)
-              .enter()
-              .append("circle")
-              .attr("class", `circle-${safeKey}`)
-              .attr("cx", d => xScale(d.data[xField]))
-              .attr("cy", d => yScale(d[1]))
-              .attr("r", 4)
-              .attr("fill", colors[layer.key] || "steelblue")
-              .attr("stroke", "#fff")
-              .attr("stroke-width", 1);
-          });
-        }
-      } else {
-        if (!stacked) {
-          activeKeys.forEach(key => {
-            const safeKey = safeClassName(key);
-            const areaGen = d3.area()
-              .defined(d => d[key] != null)
-              .y(d => yScale(d[xField]))
-              .x0(xScale(0))
-              .x1(d => xScale(d[key]))
-              .curve(d3.curveMonotoneX);
-            areaGroup.append("path")
-              .datum(data)
-              .attr("class", `area ${safeKey}`)
-              .attr("fill", colors[key] || "steelblue")
-              .attr("fill-opacity", 0.6)
-              .attr("stroke", colors[key] || "steelblue")
-              .attr("stroke-width", 2)
-              .attr("d", areaGen);
-          });
-          const circleGroup = svg.append("g").attr("class", "circle-group");
-          activeKeys.forEach(key => {
-            const safeKey = safeClassName(key);
-            circleGroup.selectAll(`.circle-${safeKey}`)
-              .data(data)
-              .enter()
-              .append("circle")
-              .attr("class", `circle-${safeKey}`)
-              .attr("cx", d => xScale(d[key]))
-              .attr("cy", d => yScale(d[xField]))
-              .attr("r", 4)
-              .attr("fill", colors[key] || "steelblue")
-              .attr("stroke", "#fff")
-              .attr("stroke-width", 1);
-          });
-        } else {
-          const stackGen = d3.stack().keys(activeKeys);
-          const stackedData = stackGen(data);
-          areaGroup.selectAll(".area-layer")
-            .data(stackedData)
-            .enter()
-            .append("path")
-            .attr("class", d => `area ${safeClassName(d.key)}`)
-            .attr("fill", d => colors[d.key] || "steelblue")
-            .attr("fill-opacity", 0.6)
-            .attr("stroke", d => colors[d.key] || "steelblue")
-            .attr("stroke-width", 2)
-            .attr("d", d3.area()
-              .y(d => yScale(d[xField]))
-              .x0(d => xScale(d[0]))
-              .x1(d => xScale(d[1]))
-              .curve(d3.curveMonotoneX));
-          const circleGroup = svg.append("g").attr("class", "circle-group");
-          stackedData.forEach(layer => {
-            const safeKey = safeClassName(layer.key);
-            circleGroup.selectAll(`.circle-${safeKey}`)
-              .data(layer)
-              .enter()
-              .append("circle")
-              .attr("class", `circle-${safeKey}`)
-              .attr("cx", d => xScale(d[1]))
-              .attr("cy", d => yScale(d.data[xField]))
-              .attr("r", 4)
-              .attr("fill", colors[layer.key] || "steelblue")
-              .attr("stroke", "#fff")
-              .attr("stroke-width", 1);
-          });
-        }
-      }
-    }
-
-    drawAreas();
+  function drawAreas() {
+    svg.selectAll(".area-group").remove();
+    svg.selectAll(".circle-group").remove();
+    const areaGroup = svg.append("g").attr("class", "area-group");
+    const activeKeys = seriesState.filter(s => s.active).map(s => s.key);
 
     if (!inverted) {
       if (!stacked) {
-        const hoverCircle = svg.append("circle")
-          .attr("class", "hover-circle")
-          .attr("r", 6)
-          .style("pointer-events", "none")
-          .style("opacity", 0);
-        svg.append("rect")
-          .attr("class", "overlay")
-          .attr("width", dims.width)
-          .attr("height", dims.height)
-          .style("fill", "none")
-          .style("pointer-events", "all")
-          .on("mousemove", mousemove)
-          .on("mouseout", mouseout);
-        function mousemove(event) {
-          removeTooltip();
-          const [mouseX, mouseY] = d3.pointer(event);
-          const xValue = xScale.invert(mouseX);
-          const bisect = d3.bisector(d => d[xField]).left;
-          let idx = bisect(data, xValue);
-          let d0 = data[idx - 1];
-          let d1 = data[idx];
-          if (!d0 && d1) d0 = d1;
-          if (!d1 && d0) d1 = d0;
-          let dPoint = d0;
-          if (d1 && Math.abs(xValue - d0[xField]) > Math.abs(d1[xField] - xValue)) {
-            dPoint = d1;
-          }
-          if (!dPoint) return;
-          let chosenSeries = null;
-          let minDistance = Infinity;
-          const activeKeys = seriesState.filter(s => s.active).map(s => s.key);
-          activeKeys.forEach(key => {
-            if (dPoint && dPoint[key] != null) {
-              const yCoord = yScale(dPoint[key]);
-              const distance = Math.abs(mouseY - yCoord);
-              if (distance < minDistance) {
-                minDistance = distance;
-                chosenSeries = key;
-              }
-            }
-          });
-          if (chosenSeries) {
-            hoverCircle
-              .attr("cx", xScale(dPoint[xField]))
-              .attr("cy", yScale(dPoint[chosenSeries]))
-              .attr("fill", colors[chosenSeries] || "steelblue")
-              .style("opacity", 1);
-            const tooltipHtml = `<strong>${dPoint[xField]}</strong><br>
-              <span style="color:${colors[chosenSeries] || "steelblue"}">&#9679;</span> ${chosenSeries}: <strong>${dPoint[chosenSeries]}</strong> ${yUnit}`;
-            showTooltip(event, tooltipHtml);
-            series.forEach(key => {
-              const safeKey = safeClassName(key);
-              const areaSel = svg.selectAll(`.area.${safeKey}`);
-              if (key !== chosenSeries) {
-                areaSel.transition().style("opacity", 0.1);
-              } else {
-                areaSel.transition().style("opacity", 1)
-                  .attr("stroke-width", 4)
-                  .attr("fill-opacity", 0.8);
-              }
-            });
-          } else {
-            hoverCircle.style("opacity", 0);
-          }
-        }
-        function mouseout() {
-          removeTooltip();
-          hoverCircle.style("opacity", 0);
-          series.forEach(key => {
-            const safeKey = safeClassName(key);
-            svg.selectAll(`.area.${safeKey}`)
-              .transition()
-              .style("opacity", 1)
-              .attr("stroke-width", 2)
-              .attr("fill-opacity", 0.6);
-          });
-        }
+        activeKeys.forEach(key => {
+          const safeKey = safeClassName(key);
+          const areaGen = d3.area()
+            .defined(d => d[key] != null)
+            .x(d => xScale(d[xField]))
+            .y0(yScale(0))
+            .y1(d => yScale(d[key]))
+            .curve(d3.curveMonotoneX);
+          areaGroup.append("path")
+            .datum(data)
+            .attr("class", `area ${safeKey}`)
+            .attr("fill", colors[key] || "steelblue")
+            .attr("fill-opacity", 0.6)
+            .attr("stroke", colors[key] || "steelblue")
+            .attr("stroke-width", 2)
+            .attr("d", areaGen);
+        });
       } else {
-        svg.append("rect")
-          .attr("class", "overlay")
-          .attr("width", dims.width)
-          .attr("height", dims.height)
-          .style("fill", "none")
-          .style("pointer-events", "all")
-          .on("mousemove", mousemoveStacked)
-          .on("mouseout", mouseoutStacked);
-        function mousemoveStacked(event) {
-          removeTooltip();
-          const [mouseX] = d3.pointer(event, this);
-          const xValue = xScale.invert(mouseX);
-          const bisect = d3.bisector(d => d[xField]).left;
-          let idx = bisect(data, xValue);
-          let d0 = data[idx - 1];
-          let d1 = data[idx];
-          if (!d0 && d1) d0 = d1;
-          if (!d1 && d0) d1 = d0;
-          let dPoint = d0;
-          if (d1 && Math.abs(xValue - d0[xField]) > Math.abs(d1[xField] - xValue)) {
-            dPoint = d1;
-          }
-          if (!dPoint) return;
-          const activeKeys = seriesState.filter(s => s.active).map(s => s.key);
-          let tooltipHtml = `<strong>${dPoint[xField]}</strong>`;
-          activeKeys.forEach(key => {
-            tooltipHtml += `<br>
-              <span style="color:${colors[key] || "steelblue"}">&#9679;</span> ${key}: <strong>${dPoint[key]}</strong> ${yUnit}`;
-          });
-          showTooltip(event, tooltipHtml);
-          const circleSize = 6;
-          svg.selectAll(".circle-group circle").attr("r", d =>
-            d.data[xField] === dPoint[xField] ? circleSize : 4
-          );
-        }
-        function mouseoutStacked() {
-          removeTooltip();
-          svg.selectAll(".circle-group circle").attr("r", 4);
-        }
+        const stackGen = d3.stack().keys(activeKeys);
+        const stackedData = stackGen(data);
+        areaGroup.selectAll(".area-layer")
+          .data(stackedData)
+          .enter()
+          .append("path")
+          .attr("class", d => `area ${safeClassName(d.key)}`)
+          .attr("fill", d => colors[d.key] || "steelblue")
+          .attr("fill-opacity", 0.6)
+          .attr("stroke", d => colors[d.key] || "steelblue")
+          .attr("stroke-width", 2)
+          .attr("d", d3.area()
+            .x(d => xScale(d.data[xField]))
+            .y0(d => yScale(d[0]))
+            .y1(d => yScale(d[1]))
+            .curve(d3.curveMonotoneX));
+        const circleGroup = svg.append("g").attr("class", "circle-group");
+        stackedData.forEach(layer => {
+          const safeKey = safeClassName(layer.key);
+          circleGroup.selectAll(`.circle-${safeKey}`)
+            .data(layer)
+            .enter()
+            .append("circle")
+            .attr("class", `circle-${safeKey}`)
+            .attr("cx", d => xScale(d.data[xField]))
+            .attr("cy", d => yScale(d[1]))
+            .attr("r", 4)
+            .attr("fill", colors[layer.key] || "steelblue")
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 1);
+        });
       }
     } else {
       if (!stacked) {
-        const hoverCircle = svg.append("circle")
-          .attr("class", "hover-circle")
-          .attr("r", 6)
-          .style("pointer-events", "none")
-          .style("opacity", 0);
-        svg.append("rect")
-          .attr("class", "overlay")
-          .attr("width", dims.width)
-          .attr("height", dims.height)
-          .style("fill", "none")
-          .style("pointer-events", "all")
-          .on("mousemove", mousemoveInverted)
-          .on("mouseout", mouseoutInverted);
-        function mousemoveInverted(event) {
-          removeTooltip();
-          const [mouseX, mouseY] = d3.pointer(event);
-          const yValue = yScale.invert(mouseY);
-          const bisect = d3.bisector(d => d[xField]).left;
-          let idx = bisect(data, yValue);
-          let d0 = data[idx - 1];
-          let d1 = data[idx];
-          if (!d0 && d1) d0 = d1;
-          if (!d1 && d0) d1 = d0;
-          let dPoint = d0;
-          if (d1 && Math.abs(yValue - d0[xField]) > Math.abs(d1[xField] - yValue)) {
-            dPoint = d1;
-          }
-          if (!dPoint) return;
-          let chosenSeries = null;
-          let minDistance = Infinity;
-          const activeKeys = seriesState.filter(s => s.active).map(s => s.key);
-          activeKeys.forEach(key => {
-            if (dPoint && dPoint[key] != null) {
-              const xCoord = xScale(dPoint[key]);
-              const distance = Math.abs(mouseX - xCoord);
-              if (distance < minDistance) {
-                minDistance = distance;
-                chosenSeries = key;
-              }
-            }
-          });
-          if (chosenSeries) {
-            hoverCircle
-              .attr("cx", xScale(dPoint[chosenSeries]))
-              .attr("cy", yScale(dPoint[xField]))
-              .attr("fill", colors[chosenSeries] || "steelblue")
-              .style("opacity", 1);
-            const tooltipHtml = `<strong>${dPoint[xField]}</strong><br>
-              <span style="color:${colors[chosenSeries] || "steelblue"}">&#9679;</span> ${chosenSeries}: <strong>${dPoint[chosenSeries]}</strong> ${yUnit}`;
-            showTooltip(event, tooltipHtml);
-            series.forEach(key => {
-              const safeKey = safeClassName(key);
-              const areaSel = svg.selectAll(`.area.${safeKey}`);
-              const circleSel = svg.selectAll(`.circle-${safeKey}`);
-              if (key !== chosenSeries) {
-                areaSel.transition().style("opacity", 0.1);
-                circleSel.transition().style("opacity", 0.1);
-              } else {
-                areaSel.transition().style("opacity", 1)
-                  .attr("stroke-width", 4)
-                  .attr("fill-opacity", 0.8);
-                circleSel.transition().style("opacity", 1);
-              }
-            });
-          } else {
-            hoverCircle.style("opacity", 0);
-          }
-        }
-        function mouseoutInverted() {
-          removeTooltip();
-          svg.select(".hover-circle").style("opacity", 0);
-          series.forEach(key => {
-            const safeKey = safeClassName(key);
-            svg.selectAll(`.area.${safeKey}`)
-              .transition()
-              .style("opacity", 1)
-              .attr("stroke-width", 2)
-              .attr("fill-opacity", 0.6);
-            svg.selectAll(`.circle-${safeKey}`).transition().style("opacity", 1);
-          });
-        }
+        activeKeys.forEach(key => {
+          const safeKey = safeClassName(key);
+          const areaGen = d3.area()
+            .defined(d => d[key] != null)
+            .y(d => yScale(d[xField]))
+            .x0(xScale(0))
+            .x1(d => xScale(d[key]))
+            .curve(d3.curveMonotoneX);
+          areaGroup.append("path")
+            .datum(data)
+            .attr("class", `area ${safeKey}`)
+            .attr("fill", colors[key] || "steelblue")
+            .attr("fill-opacity", 0.6)
+            .attr("stroke", colors[key] || "steelblue")
+            .attr("stroke-width", 2)
+            .attr("d", areaGen);
+        });
+        const circleGroup = svg.append("g").attr("class", "circle-group");
+        activeKeys.forEach(key => {
+          const safeKey = safeClassName(key);
+          circleGroup.selectAll(`.circle-${safeKey}`)
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("class", `circle-${safeKey}`)
+            .attr("cx", d => xScale(d[key]))
+            .attr("cy", d => yScale(d[xField]))
+            .attr("r", 4)
+            .attr("fill", colors[key] || "steelblue")
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 1);
+        });
       } else {
-        svg.append("rect")
-          .attr("class", "overlay")
-          .attr("width", dims.width)
-          .attr("height", dims.height)
-          .style("fill", "none")
-          .style("pointer-events", "all")
-          .on("mousemove", mousemoveStackedInverted)
-          .on("mouseout", mouseoutStackedInverted);
-        function mousemoveStackedInverted(event) {
-          removeTooltip();
-          const [mouseX, mouseY] = d3.pointer(event, this);
-          const yValue = yScale.invert(mouseY);
-          const bisect = d3.bisector(d => d[xField]).left;
-          let idx = bisect(data, yValue);
-          let d0 = data[idx - 1];
-          let d1 = data[idx];
-          if (!d0 && d1) d0 = d1;
-          if (!d1 && d0) d1 = d0;
-          let dPoint = d0;
-          if (d1 && Math.abs(yValue - d0[xField]) > Math.abs(d1[xField] - yValue)) {
-            dPoint = d1;
-          }
-          if (!dPoint) return;
-          const activeKeys = seriesState.filter(s => s.active).map(s => s.key);
-          let tooltipHtml = `<strong>${dPoint[xField]}</strong>`;
-          activeKeys.forEach(key => {
-            tooltipHtml += `<br>
-              <span style="color:${colors[key] || "steelblue"}">&#9679;</span> ${key}: <strong>${dPoint[key]}</strong> ${yUnit}`;
-          });
-          showTooltip(event, tooltipHtml);
-          const circleSize = 6;
-          svg.selectAll(".circle-group circle").attr("r", d =>
-            d.data[xField] === dPoint[xField] ? circleSize : 4
-          );
-        }
-        function mouseoutStackedInverted() {
-          removeTooltip();
-          svg.selectAll(".circle-group circle").attr("r", 4);
-        }
+        const stackGen = d3.stack().keys(activeKeys);
+        const stackedData = stackGen(data);
+        areaGroup.selectAll(".area-layer")
+          .data(stackedData)
+          .enter()
+          .append("path")
+          .attr("class", d => `area ${safeClassName(d.key)}`)
+          .attr("fill", d => colors[d.key] || "steelblue")
+          .attr("fill-opacity", 0.6)
+          .attr("stroke", d => colors[d.key] || "steelblue")
+          .attr("stroke-width", 2)
+          .attr("d", d3.area()
+            .y(d => yScale(d[xField]))
+            .x0(d => xScale(d[0]))
+            .x1(d => xScale(d[1]))
+            .curve(d3.curveMonotoneX));
+        const circleGroup = svg.append("g").attr("class", "circle-group");
+        stackedData.forEach(layer => {
+          const safeKey = safeClassName(layer.key);
+          circleGroup.selectAll(`.circle-${safeKey}`)
+            .data(layer)
+            .enter()
+            .append("circle")
+            .attr("class", `circle-${safeKey}`)
+            .attr("cx", d => xScale(d[1]))
+            .attr("cy", d => yScale(d.data[xField]))
+            .attr("r", 4)
+            .attr("fill", colors[layer.key] || "steelblue")
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 1);
+        });
       }
     }
+  }
 
-    if (showLabels && !stacked) {
-      series.forEach(key => {
-        const safeKey = safeClassName(key);
-        svg.selectAll(`.label-${safeKey}`)
-          .data(data)
-          .enter()
-          .append("text")
-          .attr("class", `data-label label-${safeKey}`)
-          .attr("x", d => !inverted ? xScale(d[xField]) : xScale(d[key]))
-          .attr("y", d => !inverted ? yScale(d[key]) - 10 : yScale(d[xField]) - 10)
-          .attr("text-anchor", "middle")
-          .style("font-size", "12px")
-          .style("fill", colors[key] || "steelblue")
-          .text(d => `${d[key]}`);
-      });
-    }
+  drawAreas();
 
-    if (title) {
-      svg.append("text")
-        .attr("x", dims.width / 2)
-        .attr("y", -20)
-        .attr("text-anchor", "middle")
-        .style("font-size", "22px")
-        .style("font-weight", "bold")
-        .text(title);
-    }
-    
-
-    if (xLabel && xLabel !== "") {
-      svg.append("text")
-        .attr("class", "x label")
-        .attr("text-anchor", "middle")
-        .attr("x", dims.width / 2)
-        .attr("y", dims.height + margins.bottom - 40)
-        .style("font-size", "14px")
-        .text(xLabel);
-    }
-
-    svg.append("text")
-      .attr("class", "y label")
-      .attr("text-anchor", "middle")
-      .attr("transform", "rotate(-90)")
-      .attr("x", -dims.height / 2)
-      .attr("y", -margins.left + 30)
-      .style("font-size", "14px")
-      .text(yLabel || yUnit);
-
-    const legendGroup = svg.append("g").attr("class", "legend-group");
-    const legendItems = legendGroup.selectAll(".legend-item")
-      .data(seriesState)
-      .enter()
-      .append("g")
-      .attr("class", "legend-item")
-      .style("cursor", "pointer")
-      .on("mouseover", function (event, d) {
-        seriesState.forEach(s => {
-          if (s.key !== d.key && s.active) {
-            const safeKey = safeClassName(s.key);
-            svg.selectAll(`.area.${safeKey}`).transition().style("opacity", 0.1);
-            if ((inverted && !stacked) || stacked) {
-              svg.selectAll(`.circle-${safeKey}`).transition().style("opacity", 0.1);
-            } else {
-              svg.selectAll(`.label-${safeKey}`).transition().style("opacity", 0.1);
-            }
-          }
-        });
-      })
-      .on("mouseout", function () {
-        seriesState.forEach(s => {
-          if (s.active) {
-            const safeKey = safeClassName(s.key);
-            svg.selectAll(`.area.${safeKey}`).transition().style("opacity", 1);
-            if ((inverted && !stacked) || stacked) {
-              svg.selectAll(`.circle-${safeKey}`).transition().style("opacity", 1);
-            } else {
-              svg.selectAll(`.label-${safeKey}`).transition().style("opacity", 1);
-            }
-          }
-        });
-      })
-      .on("click", function (event, d) {
-        d.active = !d.active;
-        d3.select(this).select("text")
-          .transition()
-          .style("text-decoration", d.active ? "none" : "line-through");
-        d3.select(this).select("circle")
-          .transition()
-          .style("fill-opacity", d.active ? 1 : 0.3);
-        const activeKeys = seriesState.filter(s => s.active).map(s => s.key);
-      
-        if (activeKeys.length > 0) {
-          const maxY = !stacked
-            ? d3.max(data, d => d3.max(activeKeys, key => d[key] || 0))
-            : d3.max(d3.stack().keys(activeKeys)(data).pop(), d => d[1]);
-          if (!inverted) {
-            yScale.domain([0, maxY + 5]).nice();
-            svg.select(".y.axis")
-              .transition()
-              .call(d3.axisLeft(yScale).ticks(8).tickFormat(d3.format("d")))
-              .call(g => g.select(".domain").remove());
-            svg.select(".grid")
-              .transition()
-              .call(d3.axisLeft(yScale).ticks(8).tickSize(-dims.width).tickFormat(""))
-              .call(g => g.select(".domain").remove());
-          } else {
-            xScale.domain([0, maxY + 4]).nice();
-            svg.select(".x.axis")
-              .transition()
-              .call(d3.axisBottom(xScale).ticks(8).tickFormat(d3.format("d")));
-            svg.select(".grid")
-              .transition()
-              .call(d3.axisBottom(xScale).ticks(8).tickSize(dims.height).tickFormat(""));
-          }
+  if (!inverted) {
+    if (!stacked) {
+      const hoverCircle = svg.append("circle")
+        .attr("class", "hover-circle")
+        .attr("r", 6)
+        .style("pointer-events", "none")
+        .style("opacity", 0);
+      svg.append("rect")
+        .attr("class", "overlay")
+        .attr("width", dims.width)
+        .attr("height", dims.height)
+        .style("fill", "none")
+        .style("pointer-events", "all")
+        .on("mousemove", mousemove)
+        .on("mouseout", mouseout);
+      function mousemove(event) {
+        removeTooltip();
+        const [mouseX, mouseY] = d3.pointer(event);
+        const xValue = xScale.invert(mouseX);
+        const bisect = d3.bisector(d => d[xField]).left;
+        let idx = bisect(data, xValue);
+        let d0 = data[idx - 1];
+        let d1 = data[idx];
+        if (!d0 && d1) d0 = d1;
+        if (!d1 && d0) d1 = d0;
+        let dPoint = d0;
+        if (d1 && Math.abs(xValue - d0[xField]) > Math.abs(d1[xField] - xValue)) {
+          dPoint = d1;
         }
-      
-        drawAreas();
-      
-        if (showLabels && !stacked) {
+        if (!dPoint) return;
+        let chosenSeries = null;
+        let minDistance = Infinity;
+        const activeKeys = seriesState.filter(s => s.active).map(s => s.key);
+        activeKeys.forEach(key => {
+          if (dPoint && dPoint[key] != null) {
+            const yCoord = yScale(dPoint[key]);
+            const distance = Math.abs(mouseY - yCoord);
+            if (distance < minDistance) {
+              minDistance = distance;
+              chosenSeries = key;
+            }
+          }
+        });
+        if (chosenSeries) {
+          hoverCircle
+            .attr("cx", xScale(dPoint[xField]))
+            .attr("cy", yScale(dPoint[chosenSeries]))
+            .attr("fill", colors[chosenSeries] || "steelblue")
+            .style("opacity", 1);
+          const tooltipHtml = `<strong>${dPoint[xField]}</strong><br>
+              <span style="color:${colors[chosenSeries] || "steelblue"}">&#9679;</span> ${chosenSeries}: <strong>${dPoint[chosenSeries]}</strong> ${yUnit}`;
+          showTooltip(event, tooltipHtml);
           series.forEach(key => {
             const safeKey = safeClassName(key);
-            const isActive = seriesState.find(s => s.key === key).active;
-            svg.selectAll(`.label-${safeKey}`)
-              .transition()
-              .style("opacity", isActive ? 1 : 0)
-              .attr("display", isActive ? null : "none");
+            const areaSel = svg.selectAll(`.area.${safeKey}`);
+            if (key !== chosenSeries) {
+              areaSel.transition().style("opacity", 0.1);
+            } else {
+              areaSel.transition().style("opacity", 1)
+                .attr("stroke-width", 4)
+                .attr("fill-opacity", 0.8);
+            }
           });
+        } else {
+          hoverCircle.style("opacity", 0);
+        }
+      }
+      function mouseout() {
+        removeTooltip();
+        hoverCircle.style("opacity", 0);
+        series.forEach(key => {
+          const safeKey = safeClassName(key);
+          svg.selectAll(`.area.${safeKey}`)
+            .transition()
+            .style("opacity", 1)
+            .attr("stroke-width", 2)
+            .attr("fill-opacity", 0.6);
+        });
+      }
+    } else {
+      svg.append("rect")
+        .attr("class", "overlay")
+        .attr("width", dims.width)
+        .attr("height", dims.height)
+        .style("fill", "none")
+        .style("pointer-events", "all")
+        .on("mousemove", mousemoveStacked)
+        .on("mouseout", mouseoutStacked);
+      function mousemoveStacked(event) {
+        removeTooltip();
+        const [mouseX] = d3.pointer(event, this);
+        const xValue = xScale.invert(mouseX);
+        const bisect = d3.bisector(d => d[xField]).left;
+        let idx = bisect(data, xValue);
+        let d0 = data[idx - 1];
+        let d1 = data[idx];
+        if (!d0 && d1) d0 = d1;
+        if (!d1 && d0) d1 = d0;
+        let dPoint = d0;
+        if (d1 && Math.abs(xValue - d0[xField]) > Math.abs(d1[xField] - xValue)) {
+          dPoint = d1;
+        }
+        if (!dPoint) return;
+        const activeKeys = seriesState.filter(s => s.active).map(s => s.key);
+        let tooltipHtml = `<strong>${dPoint[xField]}</strong>`;
+        activeKeys.forEach(key => {
+          tooltipHtml += `<br>
+              <span style="color:${colors[key] || "steelblue"}">&#9679;</span> ${key}: <strong>${dPoint[key]}</strong> ${yUnit}`;
+        });
+        showTooltip(event, tooltipHtml);
+        const circleSize = 6;
+        svg.selectAll(".circle-group circle").attr("r", d =>
+          d.data[xField] === dPoint[xField] ? circleSize : 4
+        );
+      }
+      function mouseoutStacked() {
+        removeTooltip();
+        svg.selectAll(".circle-group circle").attr("r", 4);
+      }
+    }
+  } else {
+    if (!stacked) {
+      const hoverCircle = svg.append("circle")
+        .attr("class", "hover-circle")
+        .attr("r", 6)
+        .style("pointer-events", "none")
+        .style("opacity", 0);
+      svg.append("rect")
+        .attr("class", "overlay")
+        .attr("width", dims.width)
+        .attr("height", dims.height)
+        .style("fill", "none")
+        .style("pointer-events", "all")
+        .on("mousemove", mousemoveInverted)
+        .on("mouseout", mouseoutInverted);
+      function mousemoveInverted(event) {
+        removeTooltip();
+        const [mouseX, mouseY] = d3.pointer(event);
+        const yValue = yScale.invert(mouseY);
+        const bisect = d3.bisector(d => d[xField]).left;
+        let idx = bisect(data, yValue);
+        let d0 = data[idx - 1];
+        let d1 = data[idx];
+        if (!d0 && d1) d0 = d1;
+        if (!d1 && d0) d1 = d0;
+        let dPoint = d0;
+        if (d1 && Math.abs(yValue - d0[xField]) > Math.abs(d1[xField] - yValue)) {
+          dPoint = d1;
+        }
+        if (!dPoint) return;
+        let chosenSeries = null;
+        let minDistance = Infinity;
+        const activeKeys = seriesState.filter(s => s.active).map(s => s.key);
+        activeKeys.forEach(key => {
+          if (dPoint && dPoint[key] != null) {
+            const xCoord = xScale(dPoint[key]);
+            const distance = Math.abs(mouseX - xCoord);
+            if (distance < minDistance) {
+              minDistance = distance;
+              chosenSeries = key;
+            }
+          }
+        });
+        if (chosenSeries) {
+          hoverCircle
+            .attr("cx", xScale(dPoint[chosenSeries]))
+            .attr("cy", yScale(dPoint[xField]))
+            .attr("fill", colors[chosenSeries] || "steelblue")
+            .style("opacity", 1);
+          const tooltipHtml = `<strong>${dPoint[xField]}</strong><br>
+              <span style="color:${colors[chosenSeries] || "steelblue"}">&#9679;</span> ${chosenSeries}: <strong>${dPoint[chosenSeries]}</strong> ${yUnit}`;
+          showTooltip(event, tooltipHtml);
+          series.forEach(key => {
+            const safeKey = safeClassName(key);
+            const areaSel = svg.selectAll(`.area.${safeKey}`);
+            const circleSel = svg.selectAll(`.circle-${safeKey}`);
+            if (key !== chosenSeries) {
+              areaSel.transition().style("opacity", 0.1);
+              circleSel.transition().style("opacity", 0.1);
+            } else {
+              areaSel.transition().style("opacity", 1)
+                .attr("stroke-width", 4)
+                .attr("fill-opacity", 0.8);
+              circleSel.transition().style("opacity", 1);
+            }
+          });
+        } else {
+          hoverCircle.style("opacity", 0);
+        }
+      }
+      function mouseoutInverted() {
+        removeTooltip();
+        svg.select(".hover-circle").style("opacity", 0);
+        series.forEach(key => {
+          const safeKey = safeClassName(key);
+          svg.selectAll(`.area.${safeKey}`)
+            .transition()
+            .style("opacity", 1)
+            .attr("stroke-width", 2)
+            .attr("fill-opacity", 0.6);
+          svg.selectAll(`.circle-${safeKey}`).transition().style("opacity", 1);
+        });
+      }
+    } else {
+      svg.append("rect")
+        .attr("class", "overlay")
+        .attr("width", dims.width)
+        .attr("height", dims.height)
+        .style("fill", "none")
+        .style("pointer-events", "all")
+        .on("mousemove", mousemoveStackedInverted)
+        .on("mouseout", mouseoutStackedInverted);
+      function mousemoveStackedInverted(event) {
+        removeTooltip();
+        const [mouseX, mouseY] = d3.pointer(event, this);
+        const yValue = yScale.invert(mouseY);
+        const bisect = d3.bisector(d => d[xField]).left;
+        let idx = bisect(data, yValue);
+        let d0 = data[idx - 1];
+        let d1 = data[idx];
+        if (!d0 && d1) d0 = d1;
+        if (!d1 && d0) d1 = d0;
+        let dPoint = d0;
+        if (d1 && Math.abs(yValue - d0[xField]) > Math.abs(d1[xField] - yValue)) {
+          dPoint = d1;
+        }
+        if (!dPoint) return;
+        const activeKeys = seriesState.filter(s => s.active).map(s => s.key);
+        let tooltipHtml = `<strong>${dPoint[xField]}</strong>`;
+        activeKeys.forEach(key => {
+          tooltipHtml += `<br>
+              <span style="color:${colors[key] || "steelblue"}">&#9679;</span> ${key}: <strong>${dPoint[key]}</strong> ${yUnit}`;
+        });
+        showTooltip(event, tooltipHtml);
+        const circleSize = 6;
+        svg.selectAll(".circle-group circle").attr("r", d =>
+          d.data[xField] === dPoint[xField] ? circleSize : 4
+        );
+      }
+      function mouseoutStackedInverted() {
+        removeTooltip();
+        svg.selectAll(".circle-group circle").attr("r", 4);
+      }
+    }
+  }
+
+  if (showLabels && !stacked) {
+    series.forEach(key => {
+      const safeKey = safeClassName(key);
+      svg.selectAll(`.label-${safeKey}`)
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("class", `data-label label-${safeKey}`)
+        .attr("x", d => !inverted ? xScale(d[xField]) : xScale(d[key]))
+        .attr("y", d => !inverted ? yScale(d[key]) - 10 : yScale(d[xField]) - 10)
+        .attr("text-anchor", "middle")
+        .style("font-size", "12px")
+        .style("fill", colors[key] || "steelblue")
+        .text(d => `${d[key]}`);
+    });
+  }
+
+  if (title) {
+    svg.append("text")
+      .attr("x", dims.width / 2)
+      .attr("y", -20)
+      .attr("text-anchor", "middle")
+      .style("font-size", "22px")
+      .style("font-weight", "bold")
+      .text(title);
+  }
+  
+  if (xLabel && xLabel !== "") {
+    svg.append("text")
+      .attr("class", "x label")
+      .attr("text-anchor", "middle")
+      .attr("x", dims.width / 2)
+      .attr("y", dims.height + margins.bottom - 40)
+      .style("font-size", "14px")
+      .text(xLabel);
+  }
+
+  svg.append("text")
+    .attr("class", "y label")
+    .attr("text-anchor", "middle")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -dims.height / 2)
+    .attr("y", -margins.left + 30)
+    .style("font-size", "14px")
+    .text(yLabel || yUnit);
+
+  const legendGroup = svg.append("g").attr("class", "legend-group");
+  const legendItems = legendGroup.selectAll(".legend-item")
+    .data(seriesState)
+    .enter()
+    .append("g")
+    .attr("class", "legend-item")
+    .style("cursor", "pointer")
+    .on("mouseover", function (event, d) {
+      seriesState.forEach(s => {
+        if (s.key !== d.key && s.active) {
+          const safeKey = safeClassName(s.key);
+          svg.selectAll(`.area.${safeKey}`).transition().style("opacity", 0.1);
+          if ((inverted && !stacked) || stacked) {
+            svg.selectAll(`.circle-${safeKey}`).transition().style("opacity", 0.1);
+          } else {
+            svg.selectAll(`.label-${safeKey}`).transition().style("opacity", 0.1);
+          }
         }
       });
-      
+    })
+    .on("mouseout", function () {
+      seriesState.forEach(s => {
+        if (s.active) {
+          const safeKey = safeClassName(s.key);
+          svg.selectAll(`.area.${safeKey}`).transition().style("opacity", 1);
+          if ((inverted && !stacked) || stacked) {
+            svg.selectAll(`.circle-${safeKey}`).transition().style("opacity", 1);
+          } else {
+            svg.selectAll(`.label-${safeKey}`).transition().style("opacity", 1);
+          }
+        }
+      });
+    })
+    .on("click", function (event, d) {
+      d.active = !d.active;
+      d3.select(this).select("text")
+        .transition()
+        .style("text-decoration", d.active ? "none" : "line-through");
+      d3.select(this).select("circle")
+        .transition()
+        .style("fill-opacity", d.active ? 1 : 0.3);
+      const activeKeys = seriesState.filter(s => s.active).map(s => s.key);
+    
+      if (activeKeys.length > 0) {
+        const maxY = !stacked
+          ? d3.max(data, d => d3.max(activeKeys, key => d[key] || 0))
+          : d3.max(d3.stack().keys(activeKeys)(data).pop(), d => d[1]);
+        if (!inverted) {
+          yScale.domain([0, maxY + 5]).nice();
+          // Remove the domain line before starting the transition
+          svg.select(".y.axis").selectAll(".domain").remove();
+          svg.select(".y.axis")
+            .transition()
+            .duration(750)
+            .on("start", function() {
+              d3.select(this).selectAll(".domain").remove();
+            })
+            .call(d3.axisLeft(yScale).ticks(8).tickFormat(d3.format("d")))
+            .on("end", function() {
+              d3.select(this).selectAll(".domain").remove();
+            });
+          // Remove the grid domain line before and during the transition
+          svg.select(".grid").selectAll(".domain").remove();
+          svg.select(".grid")
+            .transition()
+            .duration(750)
+            .on("start", function() {
+              d3.select(this).selectAll(".domain").remove();
+            })
+            .call(d3.axisLeft(yScale).ticks(8).tickSize(-dims.width).tickFormat(""))
+            .on("end", function() {
+              d3.select(this).selectAll(".domain").remove();
+            });
+        } else {
+          xScale.domain([0, maxY + 4]).nice();
+          // For inverted charts, update the x-axis similarly
+          svg.select(".x.axis").selectAll(".domain").remove();
+          svg.select(".x.axis")
+            .transition()
+            .duration(750)
+            .on("start", function() {
+              d3.select(this).selectAll(".domain").remove();
+            })
+            .call(d3.axisBottom(xScale).ticks(8).tickFormat(d3.format("d")))
+            .on("end", function() {
+              d3.select(this).selectAll(".domain").remove();
+            });
+          svg.select(".grid").selectAll(".domain").remove();
+          svg.select(".grid")
+            .transition()
+            .duration(750)
+            .on("start", function() {
+              d3.select(this).selectAll(".domain").remove();
+            })
+            .call(d3.axisBottom(xScale).ticks(8).tickSize(dims.height).tickFormat(""))
+            .on("end", function() {
+              d3.select(this).selectAll(".domain").remove();
+            });
+        }
+      }
+    
+      drawAreas();
+    
+      if (showLabels && !stacked) {
+        series.forEach(key => {
+          const safeKey = safeClassName(key);
+          const isActive = seriesState.find(s => s.key === key).active;
+          svg.selectAll(`.label-${safeKey}`)
+            .transition()
+            .style("opacity", isActive ? 1 : 0)
+            .attr("display", isActive ? null : "none");
+        });
+      }
+    });
+    
     legendItems.append("circle")
       .attr("class", "legend-circle")
       .attr("r", 6)
@@ -944,29 +994,31 @@ const ChartRenderers = {
         .attr("stroke", "#d3d3d3")
         .attr("rx", 5)
         .attr("ry", 5);
-      legendGroup.attr("transform", `translate(${dims.width - 165}, 20)`);
+      legendGroup.attr("transform", `translate(${dims.width - 170}, 20)`);
     } else {
       legendGroup.attr("transform", `translate(${(dims.width - legendBBox.width) / 2}, ${dims.height + 70})`);
     }
   },
  
-  
-  
 
-
+  // FIX THE DOMAIN LINE FOR NON-RANGE CHARTS
   renderColumnChart({
-    containerId,
     data,
+    containerId,
     title = "",
     xField,
-    series = [],
+    // When groups are provided, they are an array of objects:
+    // e.g., [{ groupName: "Partners A", series: ["Germany", "Norway"] },
+    //        { groupName: "Partners B", series: ["Canada", "United States"] }]
     groups = null,
+    // When groups are not provided, use a flat series array.
+    series = [],
     colors = {},
     xLabel = "",
     yLabel = "",
     yUnit = "",
     showLabels = false,
-    stacked = false, // if groups is not provided: stacked (true) or grouped (false)
+    stacked = false, // set true for stacking columns
     margins = ChartHelpers.defaultMargins,
     width = 1400,
     height = 900
@@ -974,15 +1026,13 @@ const ChartRenderers = {
     // Remove any existing SVG
     d3.select(containerId).select("svg").remove();
   
-    // Create SVG container
+    // Create SVG container and dimensions.
     const dims = ChartHelpers.getDimensions(margins, width + 70, height);
     const svg = ChartHelpers.createSVG(containerId, margins, width, height);
   
-    // Check if data has 'min' and 'max' (range chart branch)
-    const isRangeChart = data.length && data[0].hasOwnProperty('min') && data[0].hasOwnProperty('max');
-  
+    // --- RANGE CHART BRANCH (unchanged) ---
+    const isRangeChart = data.length && data[0].hasOwnProperty("min") && data[0].hasOwnProperty("max");
     if (isRangeChart) {
-      // --- RANGE CHART (horizontal range bars) ---
       const xMin = d3.min(data, d => d.min);
       const xMax = d3.max(data, d => d.max);
       const xScale = d3.scaleLinear().domain([xMin, xMax]).nice().range([0, dims.width]);
@@ -994,10 +1044,9 @@ const ChartRenderers = {
         .call(d3.axisBottom(xScale))
         .call(g => g.select(".domain").remove());
   
-      svg.append("g")
-        .attr("class", "y axis")
-        .call(d3.axisLeft(yScale))
-        .call(g => g.select(".domain").remove());
+      const yAxisRange = svg.append("g").attr("class", "y axis");
+      yAxisRange.call(d3.axisLeft(yScale).ticks(8));
+      yAxisRange.selectAll(".domain").remove();
   
       svg.append("g")
         .attr("class", "grid")
@@ -1023,14 +1072,13 @@ const ChartRenderers = {
           .attr("fill", colors.range || "steelblue")
           .attr("rx", barHeight / 2)
           .attr("ry", barHeight / 2)
-          // --- HOVER FOR RANGE BARS ---
           .on("mouseover", function(event) {
             d3.select(this).attr("opacity", 0.7);
             const tooltipHtml = `
-              ${d[xField]}<br/>
-              <span style="color:${colors.range || "steelblue"}">&#9679;</span>
-              Range: <strong>${formatValue(d.min)}${yUnit ? " " + yUnit : ""}</strong> - <strong>${formatValue(d.max)}${yUnit ? " " + yUnit : ""}</strong>
-            `;
+                ${d[xField]}<br/>
+                <span style="color:${colors.range || "steelblue"}">&#9679;</span>
+                Range: <strong>${formatValue(d.min)}${yUnit ? " " + yUnit : ""}</strong> - <strong>${formatValue(d.max)}${yUnit ? " " + yUnit : ""}</strong>
+              `;
             ChartHelpers.showTooltip(event, tooltipHtml);
           })
           .on("mousemove", function(event) {
@@ -1097,18 +1145,19 @@ const ChartRenderers = {
       return;
     }
   
-    // --- NON-RANGE CHART: ADD TOGGLING FUNCTIONALITY WITHOUT ALTERING COLUMN RANGE ---
-    // Create a state for each series so we can toggle its visibility.
-    const seriesState = series.map(key => ({ key, active: true }));
-  
-    // Define scales and axes
+    // --- NON-RANGE CHART: Define scales and axes ---
     const xDomain = data.map(d => d[xField]);
     const xScale = d3.scaleBand()
       .domain(xDomain)
       .range([0, dims.width])
       .padding(0.1);
     const yScale = d3.scaleLinear().range([dims.height, 0]);
+  
+    // Append the y-axis, remove the domain line immediately.
     const yAxis = svg.append("g").attr("class", "y axis");
+    yAxis.call(d3.axisLeft(yScale).ticks(8));
+    yAxis.selectAll(".domain").remove();
+  
     svg.append("g")
       .attr("class", "x axis")
       .attr("transform", `translate(0, ${dims.height})`)
@@ -1118,53 +1167,85 @@ const ChartRenderers = {
     // Group for columns
     const columnsGroup = svg.append("g").attr("class", "columns-group");
   
+    // --- Set up toggling state ---
+    // If groups are provided, build toggle state for each unique series.
+    let toggleState;
+    if (groups) {
+      const seriesSet = new Set();
+      groups.forEach(g => {
+        g.series.forEach(s => seriesSet.add(s));
+      });
+      toggleState = Array.from(seriesSet).map(s => ({ key: s, active: true }));
+    } else {
+      toggleState = series.map(key => ({ key, active: true }));
+    }
+  
+    // --- Compute maximum value for yScale based on active series ---
+    let maxVal;
+    if (groups) {
+      if (stacked) {
+        maxVal = d3.max(data, d => {
+          return d3.max(groups.map(group => {
+            const activeSeries = group.series.filter(s =>
+              toggleState.find(ts => ts.key === s).active
+            );
+            return activeSeries.reduce((sum, s) => sum + (d[s] || 0), 0);
+          }));
+        });
+      } else {
+        maxVal = d3.max(data, d => {
+          return d3.max(groups.flatMap(group =>
+            group.series.filter(s =>
+              toggleState.find(ts => ts.key === s).active
+            ).map(s => d[s] || 0)
+          ));
+        });
+      }
+    } else {
+      if (stacked) {
+        const activeKeys = toggleState.filter(s => s.active).map(s => s.key);
+        maxVal = d3.max(data, d => activeKeys.reduce((sum, key) => sum + (d[key] || 0), 0));
+      } else {
+        const activeKeys = toggleState.filter(s => s.active).map(s => s.key);
+        maxVal = d3.max(data, d => d3.max(activeKeys, key => d[key] || 0));
+      }
+    }
+    // Update the yScale domain with the new maximum value.
+yScale.domain([0, maxVal + 5]).nice();
+
+// Remove any existing domain lines immediately before starting the transition.
+yAxis.selectAll(".domain").remove();
+
+// Transition to update the y-axis.
+yAxis.transition()
+  .duration(500)
+  .call(d3.axisLeft(yScale).ticks(8))
+  // When the transition finishes, remove the domain line once again.
+  .on("end", function() {
+    d3.select(this).selectAll(".domain").remove();
+  });
+
+
+// Update grid lines and remove domain line from them as well.
+svg.selectAll(".grid").remove();
+svg.append("g")
+  .attr("class", "grid")
+  .style("opacity", 0.1)
+  .call(d3.axisLeft(yScale).ticks(8).tickSize(-dims.width).tickFormat(""))
+  .call(g => g.selectAll(".domain").remove());
+
+  
+    // --- Function to draw columns ---
     function drawColumns() {
-      // Clear previous columns
       columnsGroup.selectAll(".column-group").remove();
   
-      // Filter active series
-      const activeSeries = seriesState.filter(s => s.active).map(s => s.key);
-  
-      // If no series are active, do not update the y-axis or draw any columns.
-      if (activeSeries.length === 0) {
-        return;
-      }
-  
-      // Compute maximum value
-      let maxVal;
-      if (stacked) {
-        maxVal = d3.max(data, d => activeSeries.reduce((sum, key) => sum + (d[key] || 0), 0));
-      } else {
-        maxVal = d3.max(data, d => d3.max(activeSeries, key => d[key] || 0));
-      }
-      // Update yScale domain and transition the y-axis for a smooth update.
-      yScale.domain([0, maxVal + 5]).nice();
-
-      // Render the y-axis with a transition.
-      yAxis.transition()
-          .duration(500)
-          .call(d3.axisLeft(yScale).ticks(8));
-
-      // Immediately remove the y-axis domain line.
-      yAxis.select(".domain").remove();
-
-      svg.selectAll(".grid").remove();
-      svg.append("g")
-        .attr("class", "grid")
-        .style("opacity", 0.1)
-        .call(
-          d3.axisLeft(yScale)
-            .ticks(8)
-            .tickSize(-dims.width)
-            .tickFormat("")
-        )
-        // Remove the grid's domain line.
-        .call(g => g.select(".domain").remove());
-
-
-      // Check if groups were provided
       if (groups) {
-        // Create outer groups (one per x-axis category)
+        const groupNames = groups.map(g => g.groupName);
+        const outerScale = d3.scaleBand()
+          .domain(groupNames)
+          .range([0, xScale.bandwidth()])
+          .padding(0.1);
+  
         const categoryGroups = columnsGroup.selectAll(".column-group")
           .data(data)
           .enter()
@@ -1172,52 +1253,87 @@ const ChartRenderers = {
           .attr("class", "column-group")
           .attr("transform", d => `translate(${xScale(d[xField])}, 0)`);
   
-        // Create an inner scale for the groups within each category
-        const innerScale = d3.scaleBand()
-          .domain(groups)
-          .range([0, xScale.bandwidth()])
-          .padding(0.1);
-  
-        // For each category, render a column for each group
         categoryGroups.each(function(d) {
-          const groupContainer = d3.select(this);
-          groups.forEach(groupName => {
-            if (activeSeries.includes(groupName)) {
-              const value = d[groupName] || 0;
-              const rect = groupContainer.append("rect")
-                .attr("class", `column rect-${groupName.replace(/\s+/g, '-')}`)
-                .attr("x", innerScale(groupName))
-                .attr("width", innerScale.bandwidth())
-                .attr("fill", colors[groupName] || "steelblue")
-                .attr("y", yScale(0))
-                .attr("height", 0);
+          const catGroup = d3.select(this);
+          groups.forEach(group => {
+            const activeSeries = group.series.filter(s =>
+              toggleState.find(ts => ts.key === s).active
+            );
+            if (activeSeries.length === 0) return;
   
-              // Add hover tooltip functionality for each group rectangle
-              rect.on("mouseover", function(event) {
-                  d3.select(this).attr("opacity", 0.7);
-                  const tooltipHtml = `<strong>${groupName}</strong><br/>Value: ${value}`;
-                  ChartHelpers.showTooltip(event, tooltipHtml);
-                })
-                .on("mousemove", function(event) {
-                  d3.select(".tooltip")
-                    .style("left", (event.pageX + 10) + "px")
-                    .style("top", (event.pageY - 28) + "px");
-                })
-                .on("mouseout", function() {
-                  d3.select(this).attr("opacity", 1);
-                  ChartHelpers.removeTooltip();
-                });
+            const groupX = outerScale(group.groupName);
   
-              // Animate the rectangle transition
-              rect.transition()
-                .duration(500)
-                .attr("y", yScale(value))
-                .attr("height", yScale(0) - yScale(value));
+            if (stacked) {
+              let cumulative = 0;
+              activeSeries.forEach(s => {
+                const value = d[s] || 0;
+                const rectY = yScale(cumulative + value);
+                const rectHeight = yScale(cumulative) - yScale(cumulative + value);
+                catGroup.append("rect")
+                  .attr("class", `column rect-${group.groupName.replace(/\s+/g, "-")}-${s.replace(/\s+/g, "-")}`)
+                  .attr("x", groupX)
+                  .attr("width", outerScale.bandwidth())
+                  .attr("fill", colors[s] || "steelblue")
+                  .attr("y", yScale(cumulative))
+                  .attr("height", 0)
+                  .on("mouseover", function(event) {
+                    d3.select(this).attr("opacity", 0.7);
+                    const tooltipHtml = `<strong>${s}</strong><br/>Value: ${value}`;
+                    ChartHelpers.showTooltip(event, tooltipHtml);
+                  })
+                  .on("mousemove", function(event) {
+                    d3.select(".tooltip")
+                      .style("left", (event.pageX + 10) + "px")
+                      .style("top", (event.pageY - 28) + "px");
+                  })
+                  .on("mouseout", function() {
+                    d3.select(this).attr("opacity", 1);
+                    ChartHelpers.removeTooltip();
+                  })
+                  .transition()
+                  .duration(500)
+                  .attr("y", rectY)
+                  .attr("height", rectHeight);
+                cumulative += value;
+              });
+            } else {
+              const innerScale = d3.scaleBand()
+                .domain(activeSeries)
+                .range([0, outerScale.bandwidth()])
+                .padding(0.1);
+              activeSeries.forEach(s => {
+                const value = d[s] || 0;
+                catGroup.append("rect")
+                  .attr("class", `column rect-${group.groupName.replace(/\s+/g, "-")}-${s.replace(/\s+/g, "-")}`)
+                  .attr("x", groupX + innerScale(s))
+                  .attr("width", innerScale.bandwidth())
+                  .attr("fill", colors[s] || "steelblue")
+                  .attr("y", yScale(0))
+                  .attr("height", 0)
+                  .on("mouseover", function(event) {
+                    d3.select(this).attr("opacity", 0.7);
+                    const tooltipHtml = `<strong>${s}</strong><br/>Value: ${value}`;
+                    ChartHelpers.showTooltip(event, tooltipHtml);
+                  })
+                  .on("mousemove", function(event) {
+                    d3.select(".tooltip")
+                      .style("left", (event.pageX + 10) + "px")
+                      .style("top", (event.pageY - 28) + "px");
+                  })
+                  .on("mouseout", function() {
+                    d3.select(this).attr("opacity", 1);
+                    ChartHelpers.removeTooltip();
+                  })
+                  .transition()
+                  .duration(500)
+                  .attr("y", yScale(value))
+                  .attr("height", yScale(0) - yScale(value));
+              });
             }
           });
         });
       } else {
-        // When no groups are provided, use the existing stacked/grouped logic
+        const activeKeys = toggleState.filter(s => s.active).map(s => s.key);
         const categoryGroups = columnsGroup.selectAll(".column-group")
           .data(data)
           .enter()
@@ -1226,26 +1342,21 @@ const ChartRenderers = {
           .attr("transform", d => `translate(${xScale(d[xField])}, 0)`);
   
         if (stacked) {
-          // STACKED COLUMN CHART (no groups)
           categoryGroups.each(function(d) {
             let cumulative = 0;
             const groupSel = d3.select(this);
-            activeSeries.forEach(key => {
+            activeKeys.forEach(key => {
               const value = d[key] || 0;
-              const safeKey = key.replace(/\s+/g, '-');
-              const rectY0 = yScale(cumulative);
-              const rectY1 = yScale(cumulative + value);
-              const rectHeight = rectY0 - rectY1;
-              const rect = groupSel.append("rect")
-                .attr("class", `column rect-${safeKey}`)
+              const rectY = yScale(cumulative + value);
+              const rectHeight = yScale(cumulative) - yScale(cumulative + value);
+              groupSel.append("rect")
+                .attr("class", `column rect-${key.replace(/\s+/g, "-")}`)
                 .attr("x", 0)
                 .attr("width", xScale.bandwidth())
                 .attr("fill", colors[key] || "steelblue")
-                .attr("y", yScale(0))
-                .attr("height", 0);
-  
-              // Add hover events for each stacked bar
-              rect.on("mouseover", function(event) {
+                .attr("y", yScale(cumulative))
+                .attr("height", 0)
+                .on("mouseover", function(event) {
                   d3.select(this).attr("opacity", 0.7);
                   const tooltipHtml = `<strong>${key}</strong><br/>Value: ${value}`;
                   ChartHelpers.showTooltip(event, tooltipHtml);
@@ -1258,36 +1369,31 @@ const ChartRenderers = {
                 .on("mouseout", function() {
                   d3.select(this).attr("opacity", 1);
                   ChartHelpers.removeTooltip();
-                });
-  
-              rect.transition()
+                })
+                .transition()
                 .duration(500)
-                .attr("y", rectY1)
+                .attr("y", rectY)
                 .attr("height", rectHeight);
               cumulative += value;
             });
           });
         } else {
-          // GROUPED COLUMN CHART (no groups)
-          const xScaleInner = d3.scaleBand()
-            .domain(activeSeries)
+          const innerScale = d3.scaleBand()
+            .domain(activeKeys)
             .range([0, xScale.bandwidth()])
             .padding(0.2);
           categoryGroups.each(function(d) {
             const groupSel = d3.select(this);
-            activeSeries.forEach(key => {
-              const safeKey = key.replace(/\s+/g, '-');
+            activeKeys.forEach(key => {
               const value = d[key] || 0;
-              const rect = groupSel.append("rect")
-                .attr("class", `column rect-${safeKey}`)
-                .attr("x", xScaleInner(key))
-                .attr("width", xScaleInner.bandwidth())
+              groupSel.append("rect")
+                .attr("class", `column rect-${key.replace(/\s+/g, "-")}`)
+                .attr("x", innerScale(key))
+                .attr("width", innerScale.bandwidth())
                 .attr("fill", colors[key] || "steelblue")
                 .attr("y", yScale(0))
-                .attr("height", 0);
-  
-              // Add hover tooltip functionality for grouped bars
-              rect.on("mouseover", function(event) {
+                .attr("height", 0)
+                .on("mouseover", function(event) {
                   d3.select(this).attr("opacity", 0.7);
                   const tooltipHtml = `<strong>${key}</strong><br/>Value: ${value}`;
                   ChartHelpers.showTooltip(event, tooltipHtml);
@@ -1300,9 +1406,8 @@ const ChartRenderers = {
                 .on("mouseout", function() {
                   d3.select(this).attr("opacity", 1);
                   ChartHelpers.removeTooltip();
-                });
-  
-              rect.transition()
+                })
+                .transition()
                 .duration(500)
                 .attr("y", yScale(value))
                 .attr("height", yScale(0) - yScale(value));
@@ -1312,28 +1417,72 @@ const ChartRenderers = {
       }
     }
   
-    // Initial draw
+    // Initial draw of the columns
     drawColumns();
   
-    // Create legend with toggling functionality (only affects non-range chart)
+    // --- Create Legend for toggling individual series ---
     const legendGroup = svg.append("g").attr("class", "legend-group");
-    legendGroup.attr("transform", `translate(${(dims.width) / 2}, ${dims.height + 70})`);
-  
+    const legendData = toggleState;
     const legendItems = legendGroup.selectAll(".legend-item")
-      .data(seriesState)
+      .data(legendData)
       .enter()
       .append("g")
       .attr("class", "legend-item")
       .style("cursor", "pointer")
       .on("click", function(event, d) {
-      d.active = !d.active;
-      d3.select(this).select("text")
-        .transition().style("text-decoration", d.active ? "none" : "line-through");
-      d3.select(this).select("circle")
-        .transition().style("fill-opacity", d.active ? 1 : 0.3);
-      drawColumns();
+        d.active = !d.active;
+        d3.select(this).select("text")
+          .transition()
+          .style("text-decoration", d.active ? "none" : "line-through");
+        d3.select(this).select("circle")
+          .transition()
+          .style("fill-opacity", d.active ? 1 : 0.3);
+        // Recompute yScale domain with updated toggle state.
+        if (groups) {
+          if (stacked) {
+            maxVal = d3.max(data, d => {
+              return d3.max(groups.map(group => {
+                const activeSeries = group.series.filter(s =>
+                  toggleState.find(ts => ts.key === s).active
+                );
+                return activeSeries.reduce((sum, s) => sum + (d[s] || 0), 0);
+              }));
+            });
+          } else {
+            maxVal = d3.max(data, d => {
+              return d3.max(groups.flatMap(group =>
+                group.series.filter(s =>
+                  toggleState.find(ts => ts.key === s).active
+                ).map(s => d[s] || 0)
+              ));
+            });
+          }
+        } else {
+          const activeKeys = toggleState.filter(s => s.active).map(s => s.key);
+          if (stacked) {
+            maxVal = d3.max(data, d => activeKeys.reduce((sum, key) => sum + (d[key] || 0), 0));
+          } else {
+            maxVal = d3.max(data, d => d3.max(activeKeys, key => d[key] || 0));
+          }
+        }
+        yScale.domain([0, maxVal + 5]).nice();
+        
+        // Remove the domain line before starting the transition.
+        yAxis.selectAll(".domain").remove();
+        yAxis.transition().duration(500)
+          .call(d3.axisLeft(yScale).ticks(8))
+          .on("end", function() {
+            d3.select(this).selectAll(".domain").remove();
+          });
+        svg.selectAll(".grid").remove();
+        svg.append("g")
+          .attr("class", "grid")
+          .style("opacity", 0.1)
+          .call(d3.axisLeft(yScale).ticks(8).tickSize(-dims.width).tickFormat(""))
+          .call(g => g.select(".domain").remove());
+        drawColumns();
       });
-  
+      
     legendItems.append("circle")
       .attr("r", 7)
       .attr("cx", 0)
@@ -1345,6 +1494,7 @@ const ChartRenderers = {
       .style("font-size", "14px")
       .text(d => d.key);
   
+    // Position legend items horizontally.
     let xOffset = 0;
     legendItems.attr("transform", function() {
       const itemWidth = this.getBBox().width + 20;
@@ -1352,6 +1502,27 @@ const ChartRenderers = {
       xOffset += itemWidth;
       return transform;
     });
+  
+    // --- LEGEND PLACEMENT ---
+    // If the chart is in grouped AND stacked mode, position the legend in the center bottom.
+    // Otherwise, use the original positions.
+    const legendBBox = legendGroup.node().getBBox();
+    if (groups && stacked) {
+      legendGroup.attr("transform", `translate(${(dims.width - legendBBox.width)/2}, ${dims.height + 70})`);
+    } else if (stacked) {
+      legendGroup.insert("rect", ":first-child")
+        .attr("x", legendBBox.x - 10)
+        .attr("y", legendBBox.y - 10)
+        .attr("width", legendBBox.width + 20)
+        .attr("height", legendBBox.height + 20)
+        .attr("fill", "#fff")
+        .attr("stroke", "#d3d3d3")
+        .attr("rx", 5)
+        .attr("ry", 5);
+      legendGroup.attr("transform", `translate(55, 55)`);
+    } else {
+      legendGroup.attr("transform", `translate(${(dims.width - legendBBox.width)/2}, ${dims.height + 70})`);
+    }
   
     // --- Common Title and Axis Labels ---
     if (title) {
