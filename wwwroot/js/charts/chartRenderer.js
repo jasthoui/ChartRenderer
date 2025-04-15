@@ -1001,7 +1001,8 @@ const ChartRenderers = {
   },
  
 
-  // FIX THE DOMAIN LINE FOR NON-RANGE CHARTS
+  
+  // STACKED PERCENTAGE COLUMN CHART
   renderColumnChart({
     data,
     containerId,
@@ -1153,7 +1154,7 @@ const ChartRenderers = {
       .padding(0.1);
     const yScale = d3.scaleLinear().range([dims.height, 0]);
   
-    // Append the y-axis, remove the domain line immediately.
+    // Append the y-axis and immediately remove its domain line.
     const yAxis = svg.append("g").attr("class", "y axis");
     yAxis.call(d3.axisLeft(yScale).ticks(8));
     yAxis.selectAll(".domain").remove();
@@ -1211,32 +1212,28 @@ const ChartRenderers = {
       }
     }
     // Update the yScale domain with the new maximum value.
-yScale.domain([0, maxVal + 5]).nice();
-
-// Remove any existing domain lines immediately before starting the transition.
-yAxis.selectAll(".domain").remove();
-
-// Transition to update the y-axis.
-yAxis.transition()
-  .duration(500)
-  .call(d3.axisLeft(yScale).ticks(8))
-  // When the transition finishes, remove the domain line once again.
-  .on("end", function() {
-    d3.select(this).selectAll(".domain").remove();
-  });
-
-
-// Update grid lines and remove domain line from them as well.
-svg.selectAll(".grid").remove();
-svg.append("g")
-  .attr("class", "grid")
-  .style("opacity", 0.1)
-  .call(d3.axisLeft(yScale).ticks(8).tickSize(-dims.width).tickFormat(""))
-  .call(g => g.selectAll(".domain").remove());
-
+    yScale.domain([0, maxVal + 5]).nice();
+  
+    // --- Updated y-axis transition using the first snippet’s approach ---
+    yAxis
+      .call(d3.axisLeft(yScale).ticks(8));
+    // Immediately remove the domain line after transition.
+    yAxis.select(".domain").remove();
+  
+    // Update grid lines and remove their domain lines.
+    svg.selectAll(".grid").remove();
+    svg.append("g")
+      .attr("class", "grid")
+      .style("opacity", 0.1)
+      .call(d3.axisLeft(yScale).ticks(8).tickSize(-dims.width).tickFormat(""))
+      .call(g => g.selectAll(".domain").remove());
+  
+    // --- Flag to control initial drawing (no transitions) ---
+    let isInitialDraw = true;
   
     // --- Function to draw columns ---
     function drawColumns() {
+      // Remove any previously drawn columns.
       columnsGroup.selectAll(".column-group").remove();
   
       if (groups) {
@@ -1269,13 +1266,14 @@ svg.append("g")
                 const value = d[s] || 0;
                 const rectY = yScale(cumulative + value);
                 const rectHeight = yScale(cumulative) - yScale(cumulative + value);
-                catGroup.append("rect")
+                const rect = catGroup.append("rect")
                   .attr("class", `column rect-${group.groupName.replace(/\s+/g, "-")}-${s.replace(/\s+/g, "-")}`)
                   .attr("x", groupX)
                   .attr("width", outerScale.bandwidth())
                   .attr("fill", colors[s] || "steelblue")
-                  .attr("y", yScale(cumulative))
-                  .attr("height", 0)
+                  // For stacked groups, set initial y and height.
+                  .attr("y", isInitialDraw ? rectY : yScale(cumulative)) // if initial, set to final value
+                  .attr("height", isInitialDraw ? rectHeight : 0)
                   .on("mouseover", function(event) {
                     d3.select(this).attr("opacity", 0.7);
                     const tooltipHtml = `<strong>${s}</strong><br/>Value: ${value}`;
@@ -1289,11 +1287,14 @@ svg.append("g")
                   .on("mouseout", function() {
                     d3.select(this).attr("opacity", 1);
                     ChartHelpers.removeTooltip();
-                  })
-                  .transition()
-                  .duration(500)
-                  .attr("y", rectY)
-                  .attr("height", rectHeight);
+                  });
+  
+                if (!isInitialDraw) {
+                  rect.transition()
+                    .duration(500)
+                    .attr("y", rectY)
+                    .attr("height", rectHeight);
+                }
                 cumulative += value;
               });
             } else {
@@ -1303,13 +1304,14 @@ svg.append("g")
                 .padding(0.1);
               activeSeries.forEach(s => {
                 const value = d[s] || 0;
-                catGroup.append("rect")
+                const rect = catGroup.append("rect")
                   .attr("class", `column rect-${group.groupName.replace(/\s+/g, "-")}-${s.replace(/\s+/g, "-")}`)
                   .attr("x", groupX + innerScale(s))
                   .attr("width", innerScale.bandwidth())
                   .attr("fill", colors[s] || "steelblue")
-                  .attr("y", yScale(0))
-                  .attr("height", 0)
+                  // For grouped (non-stacked) columns, set final y and height on initial draw.
+                  .attr("y", isInitialDraw ? yScale(value) : yScale(0))
+                  .attr("height", isInitialDraw ? (yScale(0) - yScale(value)) : 0)
                   .on("mouseover", function(event) {
                     d3.select(this).attr("opacity", 0.7);
                     const tooltipHtml = `<strong>${s}</strong><br/>Value: ${value}`;
@@ -1323,11 +1325,14 @@ svg.append("g")
                   .on("mouseout", function() {
                     d3.select(this).attr("opacity", 1);
                     ChartHelpers.removeTooltip();
-                  })
-                  .transition()
-                  .duration(500)
-                  .attr("y", yScale(value))
-                  .attr("height", yScale(0) - yScale(value));
+                  });
+  
+                if (!isInitialDraw) {
+                  rect.transition()
+                    .duration(500)
+                    .attr("y", yScale(value))
+                    .attr("height", yScale(0) - yScale(value));
+                }
               });
             }
           });
@@ -1349,13 +1354,13 @@ svg.append("g")
               const value = d[key] || 0;
               const rectY = yScale(cumulative + value);
               const rectHeight = yScale(cumulative) - yScale(cumulative + value);
-              groupSel.append("rect")
+              const rect = groupSel.append("rect")
                 .attr("class", `column rect-${key.replace(/\s+/g, "-")}`)
                 .attr("x", 0)
                 .attr("width", xScale.bandwidth())
                 .attr("fill", colors[key] || "steelblue")
-                .attr("y", yScale(cumulative))
-                .attr("height", 0)
+                .attr("y", isInitialDraw ? rectY : yScale(cumulative))
+                .attr("height", isInitialDraw ? rectHeight : 0)
                 .on("mouseover", function(event) {
                   d3.select(this).attr("opacity", 0.7);
                   const tooltipHtml = `<strong>${key}</strong><br/>Value: ${value}`;
@@ -1369,11 +1374,14 @@ svg.append("g")
                 .on("mouseout", function() {
                   d3.select(this).attr("opacity", 1);
                   ChartHelpers.removeTooltip();
-                })
-                .transition()
-                .duration(500)
-                .attr("y", rectY)
-                .attr("height", rectHeight);
+                });
+  
+              if (!isInitialDraw) {
+                rect.transition()
+                  .duration(500)
+                  .attr("y", rectY)
+                  .attr("height", rectHeight);
+              }
               cumulative += value;
             });
           });
@@ -1386,13 +1394,13 @@ svg.append("g")
             const groupSel = d3.select(this);
             activeKeys.forEach(key => {
               const value = d[key] || 0;
-              groupSel.append("rect")
+              const rect = groupSel.append("rect")
                 .attr("class", `column rect-${key.replace(/\s+/g, "-")}`)
                 .attr("x", innerScale(key))
                 .attr("width", innerScale.bandwidth())
                 .attr("fill", colors[key] || "steelblue")
-                .attr("y", yScale(0))
-                .attr("height", 0)
+                .attr("y", isInitialDraw ? yScale(value) : yScale(0))
+                .attr("height", isInitialDraw ? (yScale(0) - yScale(value)) : 0)
                 .on("mouseover", function(event) {
                   d3.select(this).attr("opacity", 0.7);
                   const tooltipHtml = `<strong>${key}</strong><br/>Value: ${value}`;
@@ -1406,19 +1414,24 @@ svg.append("g")
                 .on("mouseout", function() {
                   d3.select(this).attr("opacity", 1);
                   ChartHelpers.removeTooltip();
-                })
-                .transition()
-                .duration(500)
-                .attr("y", yScale(value))
-                .attr("height", yScale(0) - yScale(value));
+                });
+  
+              if (!isInitialDraw) {
+                rect.transition()
+                  .duration(500)
+                  .attr("y", yScale(value))
+                  .attr("height", yScale(0) - yScale(value));
+              }
             });
           });
         }
       }
     }
   
-    // Initial draw of the columns
+    // Initial draw of the columns (without transitions).
     drawColumns();
+    // Now set the flag to false so that subsequent updates (e.g. toggling via legend) animate.
+    isInitialDraw = false;
   
     // --- Create Legend for toggling individual series ---
     const legendGroup = svg.append("g").attr("class", "legend-group");
@@ -1430,6 +1443,7 @@ svg.append("g")
       .attr("class", "legend-item")
       .style("cursor", "pointer")
       .on("click", function(event, d) {
+        // Toggle the active flag for this series.
         d.active = !d.active;
         d3.select(this).select("text")
           .transition()
@@ -1437,52 +1451,68 @@ svg.append("g")
         d3.select(this).select("circle")
           .transition()
           .style("fill-opacity", d.active ? 1 : 0.3);
-        // Recompute yScale domain with updated toggle state.
+      
+        // Determine the number of active series.
+        let activeCount;
         if (groups) {
-          if (stacked) {
-            maxVal = d3.max(data, d => {
-              return d3.max(groups.map(group => {
-                const activeSeries = group.series.filter(s =>
-                  toggleState.find(ts => ts.key === s).active
-                );
-                return activeSeries.reduce((sum, s) => sum + (d[s] || 0), 0);
-              }));
-            });
-          } else {
-            maxVal = d3.max(data, d => {
-              return d3.max(groups.flatMap(group =>
-                group.series.filter(s =>
-                  toggleState.find(ts => ts.key === s).active
-                ).map(s => d[s] || 0)
-              ));
-            });
-          }
+          // Count active series from all groups.
+          activeCount = groups.reduce((count, group) => {
+            return count + group.series.filter(s => toggleState.find(ts => ts.key === s).active).length;
+          }, 0);
         } else {
-          const activeKeys = toggleState.filter(s => s.active).map(s => s.key);
-          if (stacked) {
-            maxVal = d3.max(data, d => activeKeys.reduce((sum, key) => sum + (d[key] || 0), 0));
-          } else {
-            maxVal = d3.max(data, d => d3.max(activeKeys, key => d[key] || 0));
-          }
+          activeCount = toggleState.filter(s => s.active).length;
         }
-        yScale.domain([0, maxVal + 5]).nice();
+      
+        // Only update the y-axis if there is at least one active series.
+        if (activeCount > 0) {
+          if (groups) {
+            if (stacked) {
+              maxVal = d3.max(data, d => {
+                return d3.max(groups.map(group => {
+                  const activeSeries = group.series.filter(s =>
+                    toggleState.find(ts => ts.key === s).active
+                  );
+                  return activeSeries.reduce((sum, s) => sum + (d[s] || 0), 0);
+                }));
+              });
+            } else {
+              maxVal = d3.max(data, d => {
+                return d3.max(groups.flatMap(group =>
+                  group.series.filter(s =>
+                    toggleState.find(ts => ts.key === s).active
+                  ).map(s => d[s] || 0)
+                ));
+              });
+            }
+          } else {
+            const activeKeys = toggleState.filter(s => s.active).map(s => s.key);
+            if (stacked) {
+              maxVal = d3.max(data, d => activeKeys.reduce((sum, key) => sum + (d[key] || 0), 0));
+            } else {
+              maxVal = d3.max(data, d => d3.max(activeKeys, key => d[key] || 0));
+            }
+          }
+          yScale.domain([0, maxVal + 5]).nice();
+      
+          // Update the y-axis with a transition.
+          yAxis.transition()
+            .duration(500)
+            .call(d3.axisLeft(yScale).ticks(8));
+          yAxis.select(".domain").remove();
+      
+          // Update the grid lines.
+          svg.selectAll(".grid").remove();
+          svg.append("g")
+            .attr("class", "grid")
+            .style("opacity", 0.1)
+            .call(d3.axisLeft(yScale).ticks(8).tickSize(-dims.width).tickFormat(""))
+            .call(g => g.selectAll(".domain").remove());
+        }
         
-        // Remove the domain line before starting the transition.
-        yAxis.selectAll(".domain").remove();
-        yAxis.transition().duration(500)
-          .call(d3.axisLeft(yScale).ticks(8))
-          .on("end", function() {
-            d3.select(this).selectAll(".domain").remove();
-          });
-        svg.selectAll(".grid").remove();
-        svg.append("g")
-          .attr("class", "grid")
-          .style("opacity", 0.1)
-          .call(d3.axisLeft(yScale).ticks(8).tickSize(-dims.width).tickFormat(""))
-          .call(g => g.select(".domain").remove());
+        // Redraw the columns regardless of active series.
         drawColumns();
       });
-      
+        
     legendItems.append("circle")
       .attr("r", 7)
       .attr("cx", 0)
@@ -2293,7 +2323,7 @@ if (!stacked) {
           }
         });
     }
-  },
+  }
 
 };
 
