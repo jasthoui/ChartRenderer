@@ -252,6 +252,7 @@ const ChartRenderers = {
         });
       })
       .on("click", function (event, d) {
+        // Toggle active state of the clicked series
         d.active = !d.active;
         d3.select(this).select("text")
           .transition()
@@ -259,46 +260,60 @@ const ChartRenderers = {
         d3.select(this).select("circle")
           .transition()
           .style("fill-opacity", d.active ? 1 : 0.3);
+
         const anyActive = seriesState.some(s => s.active);
+
         if (anyActive) {
+          // Calculate new maximum for y-scale based on active series only
           const newMaxY = d3.max(data, row =>
             d3.max(seriesState.filter(s => s.active).map(s => row[s.key]))
           ) || 10;
-      
-          // Update yScale based on the new maximum value
+
+          // Update the y-scale domain
           yScale.domain([0, newMaxY + 5]).nice();
-      
-          // Remove domain line before starting the transition
-          svg.select(".y.axis").selectAll(".domain").remove();
-      
-          // Update the y‑axis with a transition and remove the domain line during and after the transition
-          svg.select(".y.axis")
-            .transition()
-            .duration(750)
-            .on("start", function() {
-              d3.select(this).selectAll(".domain").remove();
-            })
-            .call(d3.axisLeft(yScale).ticks(6))
-            .on("end", function() {
-              d3.select(this).selectAll(".domain").remove();
-            });
-      
-          // Similarly, update grid lines:
-          svg.select(".grid").selectAll(".domain").remove();
-          svg.select(".grid")
-            .transition()
-            .duration(750)
-            .on("start", function() {
-              d3.select(this).selectAll(".domain").remove();
-            })
-            .call(d3.axisLeft(yScale)
-              .ticks(6)
-              .tickSize(-dims.width)
-              .tickFormat(""))
-            .on("end", function() {
-              d3.select(this).selectAll(".domain").remove();
-            });
-      
+
+          // Re-add or update the y-axis:
+          if (svg.select(".y.axis").empty()) {
+            svg.append("g")
+              .attr("class", "y axis")
+              .call(d3.axisLeft(yScale).ticks(6))
+              .selectAll(".domain")
+              .remove();
+          } else {
+            svg.select(".y.axis")
+              .transition()
+              .duration(750)
+              .on("start", function() {
+                d3.select(this).selectAll(".domain").remove();
+              })
+              .call(d3.axisLeft(yScale).ticks(6))
+              .on("end", function() {
+                d3.select(this).selectAll(".domain").remove();
+              });
+          }
+
+          // Re-add or update the grid:
+          if (svg.select(".grid").empty()) {
+            svg.append("g")
+              .attr("class", "grid")
+              .style("opacity", 0.1)
+              .call(d3.axisLeft(yScale).ticks(6).tickSize(-dims.width).tickFormat(""))
+              .call(g => g.select(".domain").remove());
+          } else {
+            svg.select(".grid").transition()
+              .duration(750)
+              .on("start", function() {
+                d3.select(this).selectAll(".domain").remove();
+              })
+              .call(d3.axisLeft(yScale)
+                .ticks(6)
+                .tickSize(-dims.width)
+                .tickFormat(""))
+              .on("end", function() {
+                d3.select(this).selectAll(".domain").remove();
+              });
+          }
+
           // Update series elements (lines, circles, labels)
           seriesState.forEach(s => {
             const opacity = s.active ? 1 : 0;
@@ -325,36 +340,42 @@ const ChartRenderers = {
             }
           });
         } else {
+          // No series is active
+
+          // Remove the y-axis and grid with a transition:
+          svg.select(".y.axis")
+            .style("opacity", 0)
+            .remove();
+
+          svg.select(".grid")
+            .style("opacity", 0)
+            .remove();
+
+          // Hide the series elements
           svg.selectAll(".line")
-            .transition()
-            .duration(750)
             .style("opacity", 0)
             .attr("display", "none");
           svg.selectAll("circle:not(.legend-circle)")
-            .transition()
-            .duration(750)
             .style("opacity", 0)
             .attr("display", "none");
           svg.selectAll(".data-label")
-            .transition()
-            .duration(750)
             .style("opacity", 0)
             .attr("display", "none");
         }
       });
-      
-      
-      legend.append("circle")
-        .attr("class", "legend-circle")
-        .attr("cx", dims.width + 26)
-        .attr("cy", 6)
-        .attr("r", 6)
-        .style("fill", d => colors[d.key] || "steelblue");
-      legend.append("text")
-        .attr("x", dims.width + 40)
-        .attr("y", 6)
-        .attr("dy", ".35em")
-        .text(d => d.key);
+
+    legend.append("circle")
+      .attr("class", "legend-circle")
+      .attr("cx", dims.width + 26)
+      .attr("cy", 6)
+      .attr("r", 6)
+      .style("fill", d => colors[d.key] || "steelblue");
+    legend.append("text")
+      .attr("x", dims.width + 40)
+      .attr("y", 6)
+      .attr("dy", ".35em")
+      .text(d => d.key);
+
   },
 
   renderAreaChart({
@@ -884,6 +905,7 @@ const ChartRenderers = {
       });
     })
     .on("click", function (event, d) {
+      // Toggle active state on click.
       d.active = !d.active;
       d3.select(this).select("text")
         .transition()
@@ -893,66 +915,92 @@ const ChartRenderers = {
         .style("fill-opacity", d.active ? 1 : 0.3);
       const activeKeys = seriesState.filter(s => s.active).map(s => s.key);
     
+      // If there are active series, update scales and axis. Otherwise, remove axis and grid.
       if (activeKeys.length > 0) {
         const maxY = !stacked
           ? d3.max(data, d => d3.max(activeKeys, key => d[key] || 0))
           : d3.max(d3.stack().keys(activeKeys)(data).pop(), d => d[1]);
         if (!inverted) {
           yScale.domain([0, maxY + 5]).nice();
-          // Remove the domain line before starting the transition
-          svg.select(".y.axis").selectAll(".domain").remove();
-          svg.select(".y.axis")
-            .transition()
-            .duration(750)
-            .on("start", function() {
-              d3.select(this).selectAll(".domain").remove();
-            })
-            .call(d3.axisLeft(yScale).ticks(8).tickFormat(d3.format("d")))
-            .on("end", function() {
-              d3.select(this).selectAll(".domain").remove();
-            });
-          // Remove the grid domain line before and during the transition
-          svg.select(".grid").selectAll(".domain").remove();
-          svg.select(".grid")
-            .transition()
-            .duration(750)
-            .on("start", function() {
-              d3.select(this).selectAll(".domain").remove();
-            })
-            .call(d3.axisLeft(yScale).ticks(8).tickSize(-dims.width).tickFormat(""))
-            .on("end", function() {
-              d3.select(this).selectAll(".domain").remove();
-            });
+          if (svg.select(".y.axis").empty()) {
+            svg.append("g")
+              .attr("class", "y axis")
+              .call(d3.axisLeft(yScale).ticks(8).tickFormat(d3.format("d")))
+              .selectAll(".domain").remove();
+          } else {
+            svg.select(".y.axis")
+              .transition()
+              .duration(750)
+              .on("start", function () { d3.select(this).selectAll(".domain").remove(); })
+              .call(d3.axisLeft(yScale).ticks(8).tickFormat(d3.format("d")))
+              .on("end", function () { d3.select(this).selectAll(".domain").remove(); });
+          }
+          if (svg.select(".grid").empty()) {
+            svg.append("g")
+              .attr("class", "grid")
+              .style("opacity", 0.1)
+              .call(d3.axisLeft(yScale).ticks(8).tickSize(-dims.width).tickFormat(""))
+              .selectAll(".domain").remove();
+          } else {
+            svg.select(".grid")
+              .transition()
+              .duration(750)
+              .on("start", function () { d3.select(this).selectAll(".domain").remove(); })
+              .call(d3.axisLeft(yScale).ticks(8).tickSize(-dims.width).tickFormat(""))
+              .on("end", function () { d3.select(this).selectAll(".domain").remove(); });
+          }
         } else {
           xScale.domain([0, maxY + 4]).nice();
-          // For inverted charts, update the x-axis similarly
-          svg.select(".x.axis").selectAll(".domain").remove();
-          svg.select(".x.axis")
-            .transition()
-            .duration(750)
-            .on("start", function() {
-              d3.select(this).selectAll(".domain").remove();
-            })
-            .call(d3.axisBottom(xScale).ticks(8).tickFormat(d3.format("d")))
-            .on("end", function() {
-              d3.select(this).selectAll(".domain").remove();
-            });
-          svg.select(".grid").selectAll(".domain").remove();
+          if (svg.select(".x.axis").empty()){
+            svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform", `translate(0, ${dims.height})`)
+              .call(d3.axisBottom(xScale).ticks(8).tickFormat(d3.format("d")))
+              .selectAll(".domain").remove();
+          } else {
+            svg.select(".x.axis")
+              .transition()
+              .duration(750)
+              .on("start", function () { d3.select(this).selectAll(".domain").remove(); })
+              .call(d3.axisBottom(xScale).ticks(8).tickFormat(d3.format("d")))
+              .on("end", function () { d3.select(this).selectAll(".domain").remove(); });
+          }
+          if (svg.select(".grid").empty()){
+            svg.append("g")
+              .attr("class", "grid")
+              .style("opacity", 0.1)
+              .call(d3.axisBottom(xScale).ticks(8).tickSize(dims.height).tickFormat(""))
+              .selectAll(".domain").remove();
+          } else {
+            svg.select(".grid")
+              .transition()
+              .duration(750)
+              .on("start", function () { d3.select(this).selectAll(".domain").remove(); })
+              .call(d3.axisBottom(xScale).ticks(8).tickSize(dims.height).tickFormat(""))
+              .on("end", function () { d3.select(this).selectAll(".domain").remove(); });
+          }
+        }
+      } else {
+        // When no series are active, remove the appropriate axis and grid.
+        if (!inverted) {
+          svg.select(".y.axis")
+            .style("opacity", 0)
+            .remove();
           svg.select(".grid")
-            .transition()
-            .duration(750)
-            .on("start", function() {
-              d3.select(this).selectAll(".domain").remove();
-            })
-            .call(d3.axisBottom(xScale).ticks(8).tickSize(dims.height).tickFormat(""))
-            .on("end", function() {
-              d3.select(this).selectAll(".domain").remove();
-            });
+            .style("opacity", 0)
+            .remove();
+        } else {
+          svg.select(".x.axis")
+            .style("opacity", 0)
+            .remove();
+          svg.select(".grid")
+            .style("opacity", 0)
+            .remove();
         }
       }
-    
+      
       drawAreas();
-    
+      
       if (showLabels && !stacked) {
         series.forEach(key => {
           const safeKey = safeClassName(key);
@@ -964,6 +1012,7 @@ const ChartRenderers = {
         });
       }
     });
+    
     
     legendItems.append("circle")
       .attr("class", "legend-circle")
@@ -1455,7 +1504,6 @@ const ChartRenderers = {
         // Determine the number of active series.
         let activeCount;
         if (groups) {
-          // Count active series from all groups.
           activeCount = groups.reduce((count, group) => {
             return count + group.series.filter(s => toggleState.find(ts => ts.key === s).active).length;
           }, 0);
@@ -1463,8 +1511,8 @@ const ChartRenderers = {
           activeCount = toggleState.filter(s => s.active).length;
         }
       
-        // Only update the y-axis if there is at least one active series.
         if (activeCount > 0) {
+          // Update maxVal for yScale.
           if (groups) {
             if (stacked) {
               maxVal = d3.max(data, d => {
@@ -1507,11 +1555,20 @@ const ChartRenderers = {
             .style("opacity", 0.1)
             .call(d3.axisLeft(yScale).ticks(8).tickSize(-dims.width).tickFormat(""))
             .call(g => g.selectAll(".domain").remove());
+        } else {
+          // When no series are active, remove the y-axis and grid lines with a fade-out transition.
+          yAxis
+            .style("opacity", 0)
+            .remove();
+          svg.selectAll(".grid")
+            .style("opacity", 0)
+            .remove();
         }
-        
-        // Redraw the columns regardless of active series.
+      
+        // Redraw the columns.
         drawColumns();
       });
+      
         
     legendItems.append("circle")
       .attr("r", 7)
