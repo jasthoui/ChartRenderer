@@ -27,7 +27,7 @@ renderAreaChart({
     xField: "year",
     yLabel: "",
     xLabel: "Energy Production (GW)",
-    yUnit: "",
+    yUnit: "GW",
     series: ["Solar", "Wind"],
     colors: {
       Solar: "#f39c12",

@@ -25,6 +25,8 @@ renderColumnChart({
   
   xLabel: "",
   yLabel: "Count medals",
+
+  yUnit: "medals",
   
   // IMPORTANT: This ensures the series for each group are stacked vertically.
   stacked: true,

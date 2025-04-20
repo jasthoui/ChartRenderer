@@ -19,6 +19,7 @@ renderColumnChart({
     title: "Temperature Variation by Month",
     xLabel: "Month",
     yLabel: "Temperature (°C)",
+    yField: "Temperature",
     yUnit: "°C",
     colors: { min: "lightblue", max: "steelblue" },
     showLabels: true,
