@@ -21,7 +21,7 @@ renderColumnChart({
     yLabel: "Temperature (°C)",
     yField: "Temperature",
     yUnit: "°C",
-    colors: { min: "lightblue", max: "steelblue" },
+    colors: { range: "#4dabf7" },
     showLabels: true,
   });
   

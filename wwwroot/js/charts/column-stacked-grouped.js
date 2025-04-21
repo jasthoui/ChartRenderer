@@ -17,10 +17,10 @@ renderColumnChart({
   
   // Colors by series
   colors: {
-    Germany: "#c0504d",       // purple (bottom of left bar)
-    Norway: "#4f81bd",        // blue   (top of left bar)
-    Canada: "#8064a2",        // orange (bottom of right bar)
-    "United States": "#9bbb59" // green (top of right bar)
+    Germany: "#2caffe",       // purple (bottom of left bar)
+    Norway: "#544fc5",        // blue   (top of left bar)
+    Canada: "#00e272",        // orange (bottom of right bar)
+    "United States": "#fe6a35" // green (top of right bar)
   },
   
   xLabel: "",
