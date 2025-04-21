@@ -1060,25 +1060,22 @@ const ChartRenderers = {
  
 
   
-  // STACKED PERCENTAGE COLUMN CHART
+  // ADD LABELS INSIDE THE STACKED COLUMN AND STACKED PERCENTAGE COLUMN CHART
   renderColumnChart({
     data,
     containerId,
     title = "",
     xField,
     yField,
-    // When groups are provided, they are an array of objects:
-    // e.g., [{ groupName: "Partners A", series: ["Germany", "Norway"] },
-    //        { groupName: "Partners B", series: ["Canada", "United States"] }]
     groups = null,
-    // When groups are not provided, use a flat series array.
     series = [],
     colors = {},
     xLabel = "",
     yLabel = "",
     yUnit = "",
     showLabels = false,
-    stacked = false, // set true for stacking columns
+    stacked = false,
+    percentage = false,
     margins = ChartHelpers.defaultMargins,
     width = 1400,
     height = 900
@@ -1212,19 +1209,17 @@ const ChartRenderers = {
       .range([0, dims.width])
       .padding(0.1);
     const yScale = d3.scaleLinear().range([dims.height, 0]);
-  
-    // Append the y-axis and immediately remove its domain line.
+
     const yAxis = svg.append("g").attr("class", "y axis");
     yAxis.call(d3.axisLeft(yScale).ticks(8));
     yAxis.selectAll(".domain").remove();
-  
+
     svg.append("g")
       .attr("class", "x axis")
       .attr("transform", `translate(0, ${dims.height})`)
       .call(d3.axisBottom(xScale))
       .call(g => g.select(".domain").remove());
-  
-    // Group for columns
+
     const columnsGroup = svg.append("g").attr("class", "columns-group");
   
     // --- Set up toggling state ---
@@ -1239,60 +1234,109 @@ const ChartRenderers = {
     } else {
       toggleState = series.map(key => ({ key, active: true }));
     }
+
+    if (stacked && percentage) {
+      data.forEach(d => {
+        let total = 0;
+        if (groups) {
+          groups.forEach(group => {
+            group.series.forEach(series => {
+              const isActive = toggleState.find(ts => ts.key === series)?.active;
+              if (isActive) total += d[series] || 0;
+            });
+          });
+        } else {
+          toggleState.forEach(({ key, active }) => {
+            if (active) total += d[key] || 0;
+          });
+        }
+
+        if (total > 0) {
+          if (groups) {
+            groups.forEach(group => {
+              group.series.forEach(series => {
+                if (toggleState.find(ts => ts.key === series)?.active) {
+                  d[`_${series}_percent`] = ((d[series] || 0) / total) * 100;
+                }
+              });
+            });
+          } else {
+            toggleState.forEach(({ key, active }) => {
+              if (active) {
+                d[`_${key}_percent`] = ((d[key] || 0) / total) * 100;
+              }
+            });
+          }
+        }
+      });
+    }
   
     // --- Compute maximum value for yScale based on active series ---
     let maxVal;
-    if (groups) {
-      if (stacked) {
-        maxVal = d3.max(data, d => {
-          return d3.max(groups.map(group => {
-            const activeSeries = group.series.filter(s =>
-              toggleState.find(ts => ts.key === s).active
-            );
-            return activeSeries.reduce((sum, s) => sum + (d[s] || 0), 0);
-          }));
-        });
-      } else {
-        maxVal = d3.max(data, d => {
-          return d3.max(groups.flatMap(group =>
-            group.series.filter(s =>
-              toggleState.find(ts => ts.key === s).active
-            ).map(s => d[s] || 0)
-          ));
-        });
-      }
-    } else {
-      if (stacked) {
-        const activeKeys = toggleState.filter(s => s.active).map(s => s.key);
-        maxVal = d3.max(data, d => activeKeys.reduce((sum, key) => sum + (d[key] || 0), 0));
-      } else {
-        const activeKeys = toggleState.filter(s => s.active).map(s => s.key);
-        maxVal = d3.max(data, d => d3.max(activeKeys, key => d[key] || 0));
-      }
-    }
-    // Update the yScale domain with the new maximum value.
-    yScale.domain([0, maxVal + 5]).nice();
-  
+
+if (groups) {
+  if (stacked) {
+    maxVal = d3.max(data, d => {
+      return d3.max(groups.map(group => {
+        const activeSeries = group.series.filter(s =>
+          toggleState.find(ts => ts.key === s).active
+        );
+        return activeSeries.reduce((sum, s) => sum + (d[s] || 0), 0);
+      }));
+    });
+  } else {
+    maxVal = d3.max(data, d => {
+      return d3.max(groups.flatMap(group =>
+        group.series.filter(s =>
+          toggleState.find(ts => ts.key === s).active
+        ).map(s => d[s] || 0)
+      ));
+    });
+  }
+} else {
+  if (stacked) {
+    const activeKeys = toggleState.filter(s => s.active).map(s => s.key);
+    maxVal = d3.max(data, d => activeKeys.reduce((sum, key) => sum + (d[key] || 0), 0));
+  } else {
+    const activeKeys = toggleState.filter(s => s.active).map(s => s.key);
+    maxVal = d3.max(data, d => d3.max(activeKeys, key => d[key] || 0));
+  }
+}
+
+// ✅ Apply Y-axis domain and ticks AFTER maxVal is computed
+if (stacked && percentage) {
+  yScale.domain([0, 100]);
+  yAxis.call(d3.axisLeft(yScale).tickValues([0, 25, 50, 75, 100]));
+} else {
+  yScale.domain([0, maxVal + 5]).nice();
+  yAxis.call(d3.axisLeft(yScale).ticks(8));
+}
+
     // --- Updated y-axis transition using the first snippet’s approach ---
-    yAxis
-      .call(d3.axisLeft(yScale).ticks(8));
-    // Immediately remove the domain line after transition.
     yAxis.select(".domain").remove();
-  
-    // Update grid lines and remove their domain lines.
+
     svg.selectAll(".grid").remove();
-    svg.append("g")
-      .attr("class", "grid")
-      .style("opacity", 0.1)
-      .call(d3.axisLeft(yScale).ticks(8).tickSize(-dims.width).tickFormat(""))
-      .call(g => g.selectAll(".domain").remove());
-  
-    // --- Flag to control initial drawing (no transitions) ---
+svg.append("g")
+  .attr("class", "grid")
+  .style("opacity", 0.1)
+  .call(
+    (stacked && percentage
+      ? d3.axisLeft(yScale).tickValues([0, 25, 50, 75, 100])
+      : d3.axisLeft(yScale).ticks(8)
+    )
+    .tickSize(-dims.width)
+    .tickFormat("")
+  )
+  .call(g => g.selectAll(".domain").remove());
+
+
+
+
+
     let isInitialDraw = true;
   
     // --- Function to draw columns ---
     function drawColumns() {
-      // Remove any previously drawn columns.
       columnsGroup.selectAll(".column-group").remove();
 
       const formatValue = d3.format(",");
@@ -1357,11 +1401,16 @@ const ChartRenderers = {
                     const value = d[currentKey] || 0;
 
                     // Tooltip HTML
-                    const tooltipHtml = `
-                      <div style="font-weight: bold; margin-bottom: 4px;">${d[xField]}</div>
-                      <div>${currentKey}: ${formatValue(value)}</div>
-                      <div style="margin-top: 4px;">Total: ${formatValue(total)}</div>
-                    `;
+                    const valueDisplay = percentage
+  ? `${value.toFixed(1)}%`
+  : `${formatValue(value)}${yUnit ? " " + yUnit : ""}`;
+
+const tooltipHtml = `
+  <div style="font-weight: bold; margin-bottom: 4px;">${d[xField]}</div>
+  <div>${currentKey}: ${valueDisplay}</div>
+  ${!percentage ? `<div style="margin-top: 4px;">Total: ${formatValue(total)}${yUnit ? " " + yUnit : ""}</div>` : ""}
+`;
+
                       
                     ChartHelpers.showTooltip(event, tooltipHtml);
                   })                  
@@ -1393,7 +1442,7 @@ const ChartRenderers = {
                 .range([0, outerScale.bandwidth()])
                 .padding(0.1);
               activeSeries.forEach(s => {
-                const value = d[s] || 0;
+                const value = percentage ? d[`_${s}_percent`] || 0 : d[s] || 0;
                 const rect = catGroup.append("rect")
                   .attr("class", `column rect-${group.groupName.replace(/\s+/g, "-")}-${s.replace(/\s+/g, "-")}`)
                   .attr("data-series", s)                
@@ -1470,22 +1519,41 @@ const ChartRenderers = {
                 .attr("y", isInitialDraw ? rectY : yScale(cumulative))
                 .attr("height", isInitialDraw ? rectHeight : 0)
                 .on("mouseover", function(event) {
-                  const currentKey = d3.select(this).attr("data-series");
-                  // Fade out all bars
+                  const bar = d3.select(this);
+                  const currentKey = bar.attr("data-series");
+                
+                  // Fade all bars
                   d3.selectAll(".column")
                     .transition()
                     .duration(200)
                     .style("opacity", 0.2);
-                  // Highlight the current series
-                  d3.selectAll(`.column[data-series='${currentKey}']`)
+                
+                  // Highlight all bars for this xField category
+                  d3.selectAll(`.column-group`)
+                    .filter(group => group[xField] === d[xField])
+                    .selectAll(".column")
                     .transition()
                     .duration(200)
                     .style("opacity", 1);
                 
-                  const tooltipHtml = `<strong>${d[xField]}</strong><br/>
-                    <span style="color:${colors[key] || "black"}">&#9679;</span>
-                    ${key}: <strong>${formatValue(value)} ${yUnit}</strong>
+                  // Build tooltip HTML for ALL active series
+                  const activeKeys = toggleState.filter(s => s.active).map(s => s.key);
+                  const lines = activeKeys.map(key => {
+                    const value = d[key] || 0;
+                    const percent = d[`_${key}_percent`] || 0;
+                    return `
+                      <div>
+                        <span style="color:${colors[key] || "black"}"><strong>${key}:</strong></span>
+                        <strong>${formatValue(value)}</strong> (${percent.toFixed(0)}%)
+                      </div>`;
+                  });
+                  
+                
+                  const tooltipHtml = `
+                    <div style="font-weight:bold; margin-bottom: 4px;">${d[xField]}</div>
+                    ${lines.join("")}
                   `;
+                
                   ChartHelpers.showTooltip(event, tooltipHtml);
                 })
                 
@@ -1669,29 +1737,43 @@ const ChartRenderers = {
           }
     
           // 4) Update the y‐scale domain
-          yScale.domain([0, maxVal + 5]).nice();
+          if (!(stacked && percentage)) {
+            yScale.domain([0, maxVal + 5]).nice();
+            yAxis.transition().duration(500).call(d3.axisLeft(yScale).ticks(8));
+          } else {
+            yAxis.transition()
+              .duration(500)
+              .call(d3.axisLeft(yScale).tickValues([0, 25, 50, 75, 100]));
+          }          
+
     
           // 5) Bring the axis group back to full opacity
           yAxis.style("opacity", 1);
     
           // 6) Transition and redraw the y‐axis ticks & labels
           yAxis.transition()
-            .duration(500)
-            .call(d3.axisLeft(yScale).ticks(8));
+  .duration(500)
+  .call(stacked && percentage
+    ? d3.axisLeft(yScale).tickValues([0, 25, 50, 75, 100])
+    : d3.axisLeft(yScale).ticks(8)
+  );
+
           // option: remove the domain line if you prefer
           yAxis.select(".domain").remove();
     
           // 7) Rebuild the grid lines
           svg.selectAll(".grid").remove();
           svg.append("g")
-            .attr("class", "grid")
-            .style("opacity", 0.1)
-            .call(
-              d3.axisLeft(yScale)
-                .ticks(8)
-                .tickSize(-dims.width)
-                .tickFormat("")
-            )
+  .attr("class", "grid")
+  .style("opacity", 0.1)
+  .call(
+    (stacked && percentage
+      ? d3.axisLeft(yScale).tickValues([0, 25, 50, 75, 100])
+      : d3.axisLeft(yScale).ticks(8)
+    )
+    .tickSize(-dims.width)
+    .tickFormat("")
+  )
             .call(g => g.selectAll(".domain").remove());
     
         } else {
@@ -1734,7 +1816,7 @@ const ChartRenderers = {
     // If the chart is in grouped AND stacked mode, position the legend in the center bottom.
     // Otherwise, use the original positions.
     const legendBBox = legendGroup.node().getBBox();
-    if (groups && stacked) {
+    if (groups && stacked || percentage && stacked) {
       legendGroup.attr("transform", `translate(${(dims.width - legendBBox.width)/2}, ${dims.height + 70})`);
     } else if (stacked) {
       legendGroup.insert("rect", ":first-child")
