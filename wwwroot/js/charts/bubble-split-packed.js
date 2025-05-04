@@ -179,18 +179,19 @@ renderBubbleChart({
   ],
   zField: "value",
   labelField: "name",
-  countryField: "name",
   colorField: "category",
-  colors: {
-    "North America": "#1f77b4",
-    "South America": "#ff7f0e",
-    "Europe": "#2ca02c",
-    "Asia": "#d62728",
-    "Oceania": "#9467bd"
-  },
-  title: "Packed Bubble Chart Example",
+  title: "Carbon Emissions Around the World (2022)",
   subtitle: "",
   yUnit: "m",
   zUnit: "CO₂",
-  packed: true
+  packed: false,
+  splitPacked: true,
+  colors: {
+    "Asia": "#e3b3f1",
+    "Europe": "#b3e7ff",
+    "Africa": "#a694f1",
+    "North America": "#f9a77d",
+    "South America": "#c5d7f0",
+    "Oceania": "#a8f4b0"
+  }
 });

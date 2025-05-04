@@ -1,7 +1,3 @@
-/**
- * ChartHelpers: Contains shared methods for dimension calculations,
- * SVG container creation, and tooltip handling.
- */
 const ChartHelpers = {
   defaultMargins: { top: 60, right: 120, bottom: 115, left: 75 },
 
@@ -55,10 +51,6 @@ const ChartHelpers = {
   }
 };
 
-/**
- * ChartRenderers: A modular collection of chart‐rendering functions.
- * Each renderer accepts an options object and uses ChartHelpers for common tasks.
- */
 const ChartRenderers = {
   renderLineChart({
     containerId,
@@ -78,7 +70,6 @@ const ChartRenderers = {
     const dims = ChartHelpers.getDimensions(margins, width, height);
     const svg = ChartHelpers.createSVG(containerId, margins, width, height);
   
-    // Create scales
     const xDomain = data.map(d => d[xField]);
     const xScale = d3.scalePoint()
       .domain(xDomain)
@@ -90,8 +81,6 @@ const ChartRenderers = {
       .nice()
       .range([dims.height, 0]);
   
-    // Axes
-    // x-axis remains unchanged
     svg.append("g")
       .attr("class", "x axis")
       .attr("transform", `translate(0,${dims.height})`)
@@ -100,14 +89,12 @@ const ChartRenderers = {
       .attr("transform", "rotate(-45)")
       .style("text-anchor", "end");
   
-    // Create y-axis and remove the domain line immediately
     svg.append("g")
       .attr("class", "y axis")
       .call(d3.axisLeft(yScale).ticks(6))
       .selectAll(".domain")
       .remove();
   
-    // Create initial grid lines (grid code unchanged)
     svg.append("g")
       .attr("class", "grid")
       .style("opacity", 0.1)
@@ -117,7 +104,6 @@ const ChartRenderers = {
     const seriesState = series.map(key => ({ key, active: true }));
     const lineFns = {};
   
-    // Create lines, circles, labels, and interaction handlers...
     series.forEach(key => {
       const line = d3.line()
         .x(d => xScale(d[xField]))
@@ -200,7 +186,6 @@ const ChartRenderers = {
       }
     });
   
-    // Title and axis labels (unchanged)
     if (title) {
       svg.append("text")
         .attr("x", 0)
@@ -228,7 +213,6 @@ const ChartRenderers = {
       .style("font-size", "14px")
       .text(yLabel);
   
-    // Legend handling with y-axis update:
     const legendSpacing = 20;
     const legendStartY = dims.height / 2 - (series.length * legendSpacing) / 2;
     const legend = svg.selectAll(".legend")
@@ -256,7 +240,6 @@ const ChartRenderers = {
         });
       })
       .on("click", function (event, d) {
-        // Toggle active state of the clicked series
         d.active = !d.active;
         d3.select(this).select("text")
           .transition()
@@ -268,15 +251,12 @@ const ChartRenderers = {
         const anyActive = seriesState.some(s => s.active);
 
         if (anyActive) {
-          // Calculate new maximum for y-scale based on active series only
           const newMaxY = d3.max(data, row =>
             d3.max(seriesState.filter(s => s.active).map(s => row[s.key]))
           ) || 10;
 
-          // Update the y-scale domain
           yScale.domain([0, newMaxY + 5]).nice();
 
-          // Re-add or update the y-axis:
           if (svg.select(".y.axis").empty()) {
             svg.append("g")
               .attr("class", "y axis")
@@ -296,7 +276,6 @@ const ChartRenderers = {
               });
           }
 
-          // Re-add or update the grid:
           if (svg.select(".grid").empty()) {
             svg.append("g")
               .attr("class", "grid")
@@ -318,7 +297,6 @@ const ChartRenderers = {
               });
           }
 
-          // Update series elements (lines, circles, labels)
           seriesState.forEach(s => {
             const opacity = s.active ? 1 : 0;
             const display = s.active ? null : "none";
@@ -344,9 +322,6 @@ const ChartRenderers = {
             }
           });
         } else {
-          // No series is active
-
-          // Remove the y-axis and grid with a transition:
           svg.select(".y.axis")
             .style("opacity", 0)
             .remove();
@@ -355,7 +330,6 @@ const ChartRenderers = {
             .style("opacity", 0)
             .remove();
 
-          // Hide the series elements
           svg.selectAll(".line")
             .style("opacity", 0)
             .attr("display", "none");
@@ -382,7 +356,7 @@ const ChartRenderers = {
 
   },
 
-    renderAreaChart({
+  renderAreaChart({
     containerId,
     data,
     title = "",
@@ -914,7 +888,6 @@ const ChartRenderers = {
         });
       })
       .on("click", function (event, d) {
-        // Toggle active state on click.
         d.active = !d.active;
         d3.select(this).select("text")
           .transition()
@@ -924,7 +897,6 @@ const ChartRenderers = {
           .style("fill-opacity", d.active ? 1 : 0.3);
         const activeKeys = seriesState.filter(s => s.active).map(s => s.key);
       
-        // If there are active series, update scales and axis. Otherwise, remove axis and grid.
         if (activeKeys.length > 0) {
           const maxY = !stacked
             ? d3.max(data, d => d3.max(activeKeys, key => d[key] || 0))
@@ -990,7 +962,6 @@ const ChartRenderers = {
             }
           }
         } else {
-          // When no series are active, remove the appropriate axis and grid.
           if (!inverted) {
             svg.select(".y.axis")
               .style("opacity", 0)
@@ -1056,11 +1027,8 @@ const ChartRenderers = {
       } else {
         legendGroup.attr("transform", `translate(${(dims.width - legendBBox.width) / 2}, ${dims.height + 70})`);
       }
-    },
+  },
  
-
-  
-  // ADD LABELS INSIDE THE STACKED COLUMN AND STACKED PERCENTAGE COLUMN CHART
   renderColumnChart({
     data,
     containerId,
@@ -1080,14 +1048,11 @@ const ChartRenderers = {
     width = 1400,
     height = 900
   }) {
-    // Remove any existing SVG
     d3.select(containerId).select("svg").remove();
   
-    // Create SVG container and dimensions.
     const dims = ChartHelpers.getDimensions(margins, width + 50, height);
     const svg = ChartHelpers.createSVG(containerId, margins, width, height);
   
-    // --- RANGE CHART BRANCH (unchanged) ---
     const isRangeChart = data.length && data[0].hasOwnProperty("min") && data[0].hasOwnProperty("max");
     if (isRangeChart) {
       const xMin = d3.min(data, d => d.min);
@@ -1202,7 +1167,6 @@ const ChartRenderers = {
       return;
     }
   
-    // --- NON-RANGE CHART: Define scales and axes ---
     const xDomain = data.map(d => d[xField]);
     const xScale = d3.scaleBand()
       .domain(xDomain)
@@ -1222,8 +1186,6 @@ const ChartRenderers = {
 
     const columnsGroup = svg.append("g").attr("class", "columns-group");
   
-    // --- Set up toggling state ---
-    // If groups are provided, build toggle state for each unique series.
     let toggleState;
     if (groups) {
       const seriesSet = new Set();
@@ -1237,41 +1199,35 @@ const ChartRenderers = {
 
     if (stacked && percentage) {
       data.forEach(d => {
-        let total = 0;
+        let activeKeys = [];
+    
         if (groups) {
           groups.forEach(group => {
             group.series.forEach(series => {
-              const isActive = toggleState.find(ts => ts.key === series)?.active;
-              if (isActive) total += d[series] || 0;
+              if (toggleState.find(ts => ts.key === series)?.active) {
+                activeKeys.push(series);
+              }
             });
           });
         } else {
-          toggleState.forEach(({ key, active }) => {
-            if (active) total += d[key] || 0;
+          activeKeys = toggleState.filter(ts => ts.active).map(ts => ts.key);
+        }
+    
+        const total = activeKeys.reduce((sum, key) => sum + (d[key] || 0), 0);
+    
+        activeKeys.forEach(key => {
+          const val = d[key] || 0;
+          d[`_${key}_percent`] = total > 0 ? (val / total) * 100 : 0;
+        });
+    
+        toggleState
+          .filter(ts => !activeKeys.includes(ts.key))
+          .forEach(ts => {
+            delete d[`_${ts.key}_percent`];
           });
-        }
-
-        if (total > 0) {
-          if (groups) {
-            groups.forEach(group => {
-              group.series.forEach(series => {
-                if (toggleState.find(ts => ts.key === series)?.active) {
-                  d[`_${series}_percent`] = ((d[series] || 0) / total) * 100;
-                }
-              });
-            });
-          } else {
-            toggleState.forEach(({ key, active }) => {
-              if (active) {
-                d[`_${key}_percent`] = ((d[key] || 0) / total) * 100;
-              }
-            });
-          }
-        }
       });
     }
   
-    // --- Compute maximum value for yScale based on active series ---
     let maxVal;
 
 if (groups) {
@@ -1303,7 +1259,6 @@ if (groups) {
   }
 }
 
-// ✅ Apply Y-axis domain and ticks AFTER maxVal is computed
 if (stacked && percentage) {
   yScale.domain([0, 100]);
   yAxis.call(d3.axisLeft(yScale).tickValues([0, 25, 50, 75, 100]));
@@ -1312,30 +1267,24 @@ if (stacked && percentage) {
   yAxis.call(d3.axisLeft(yScale).ticks(8));
 }
 
-    // --- Updated y-axis transition using the first snippet’s approach ---
     yAxis.select(".domain").remove();
 
     svg.selectAll(".grid").remove();
-svg.append("g")
-  .attr("class", "grid")
-  .style("opacity", 0.1)
-  .call(
-    (stacked && percentage
-      ? d3.axisLeft(yScale).tickValues([0, 25, 50, 75, 100])
-      : d3.axisLeft(yScale).ticks(8)
-    )
-    .tickSize(-dims.width)
-    .tickFormat("")
-  )
-  .call(g => g.selectAll(".domain").remove());
-
-
-
-
+    svg.append("g")
+      .attr("class", "grid")
+      .style("opacity", 0.1)
+      .call(
+        (stacked && percentage
+          ? d3.axisLeft(yScale).tickValues([0, 25, 50, 75, 100])
+          : d3.axisLeft(yScale).ticks(8)
+        )
+        .tickSize(-dims.width)
+        .tickFormat("")
+      )
+      .call(g => g.selectAll(".domain").remove());
 
     let isInitialDraw = true;
   
-    // --- Function to draw columns ---
     function drawColumns() {
       columnsGroup.selectAll(".column-group").remove();
 
@@ -1376,6 +1325,7 @@ svg.append("g")
                 const rect = catGroup.append("rect")
                   .attr("class", `column rect-${group.groupName.replace(/\s+/g, "-")}-${s.replace(/\s+/g, "-")}`)
                   .attr("data-series", s)                
+                  .attr("data-category", d[xField])
                   .attr("x",     groupX)
                   .attr("width", outerScale.bandwidth())
                   .attr("fill",  colors[s] || "black")
@@ -1384,23 +1334,19 @@ svg.append("g")
                   .on("mouseover", function(event) {
                     const currentKey = d3.select(this).attr("data-series");
                   
-                    // Fade out all bars
                     d3.selectAll(".column")
                       .transition()
                       .duration(200)
                       .style("opacity", 0.2);
                   
-                    // Highlight the current series
                     d3.selectAll(`.column[data-series='${currentKey}']`)
                       .transition()
                       .duration(200)
                       .style("opacity", 1);
                   
-                    // Total for this group
                     const total = activeSeries.reduce((sum, key) => sum + (d[key] || 0), 0);
                     const value = d[currentKey] || 0;
 
-                    // Tooltip HTML
                     const valueDisplay = percentage
   ? `${value.toFixed(1)}%`
   : `${formatValue(value)}${yUnit ? " " + yUnit : ""}`;
@@ -1428,8 +1374,7 @@ const tooltipHtml = `
                   });                  
             
                 if (!isInitialDraw) {
-                  rect.transition()
-                    .duration(500)
+                  rect
                     .attr("y",      rectY)
                     .attr("height", rectHeight);
                 }
@@ -1449,19 +1394,16 @@ const tooltipHtml = `
                   .attr("x", groupX + innerScale(s))
                   .attr("width", innerScale.bandwidth())
                   .attr("fill", colors[s] || "black")
-                  // For grouped (non-stacked) columns, set final y and height on initial draw.
                   .attr("y", isInitialDraw ? yScale(value) : yScale(0))
                   .attr("height", isInitialDraw ? (yScale(0) - yScale(value)) : 0)
                   .on("mouseover", function(event) {
                     const currentKey = d3.select(this).attr("data-series");
                   
-                    // Fade out all bars
                     d3.selectAll(".column")
                       .transition()
                       .duration(200)
                       .style("opacity", 0.2);
                   
-                    // Highlight the current series
                     d3.selectAll(`.column[data-series='${currentKey}']`)
                       .transition()
                       .duration(200)
@@ -1484,8 +1426,7 @@ const tooltipHtml = `
                   });
   
                 if (!isInitialDraw) {
-                  rect.transition()
-                    .duration(500)
+                  rect
                     .attr("y", yScale(value))
                     .attr("height", yScale(0) - yScale(value));
                 }
@@ -1507,12 +1448,13 @@ const tooltipHtml = `
             let cumulative = 0;
             const groupSel = d3.select(this);
             activeKeys.forEach(key => {
-              const value = d[key] || 0;
+              const value = percentage ? d[`_${key}_percent`] || 0 : d[key] || 0;
               const rectY = yScale(cumulative + value);
               const rectHeight = yScale(cumulative) - yScale(cumulative + value);
               const rect = groupSel.append("rect")
                 .attr("class", `column rect-${key.replace(/\s+/g, "-")}`)
-                .attr("data-series", key)              
+                .attr("data-series", key)
+                .attr("data-category", d[xField])
                 .attr("x", 0)
                 .attr("width", xScale.bandwidth())
                 .attr("fill", colors[key] || "black")
@@ -1521,38 +1463,53 @@ const tooltipHtml = `
                 .on("mouseover", function(event) {
                   const bar = d3.select(this);
                   const currentKey = bar.attr("data-series");
+                  const currentCategory = bar.attr("data-category");
+                  const value = d[currentKey] || 0;
+                  const color = colors[currentKey] || "black";
+                  const total = activeKeys.reduce((sum, key) => sum + (d[key] || 0), 0);
                 
-                  // Fade all bars
                   d3.selectAll(".column")
                     .transition()
                     .duration(200)
                     .style("opacity", 0.2);
                 
-                  // Highlight all bars for this xField category
-                  d3.selectAll(`.column-group`)
-                    .filter(group => group[xField] === d[xField])
-                    .selectAll(".column")
-                    .transition()
-                    .duration(200)
-                    .style("opacity", 1);
+                  if (percentage) {
+                    d3.selectAll(`.column[data-category='${currentCategory}']`)
+                      .transition()
+                      .duration(200)
+                      .style("opacity", 1);
+                  } else {
+                    d3.selectAll(`.column[data-series='${currentKey}']`)
+                      .transition()
+                      .duration(200)
+                      .style("opacity", 1);
+                  }
                 
-                  // Build tooltip HTML for ALL active series
-                  const activeKeys = toggleState.filter(s => s.active).map(s => s.key);
-                  const lines = activeKeys.map(key => {
-                    const value = d[key] || 0;
-                    const percent = d[`_${key}_percent`] || 0;
-                    return `
-                      <div>
-                        <span style="color:${colors[key] || "black"}"><strong>${key}:</strong></span>
-                        <strong>${formatValue(value)}</strong> (${percent.toFixed(0)}%)
-                      </div>`;
-                  });
-                  
+                  let tooltipHtml = "";
                 
-                  const tooltipHtml = `
-                    <div style="font-weight:bold; margin-bottom: 4px;">${d[xField]}</div>
-                    ${lines.join("")}
-                  `;
+                  if (percentage) {
+                    const rows = activeKeys.map(key => {
+                      const val = d[key] || 0;
+                      const pct = d[`_${key}_percent`] || 0;
+                      const c = colors[key] || "black";
+                      return `
+                        <div style="margin: 2px 0;">
+                          <span style="color:${c}; font-weight: bold;">${key}:</span>
+                          <strong>${formatValue(val)}</strong> (${pct.toFixed(0)}%)
+                        </div>`;
+                    });
+                
+                    tooltipHtml = `
+                      <div style="font-weight: bold; margin-bottom: 6px;">${d[xField]}</div>
+                      ${rows.join("")}
+                    `;
+                  } else {
+                    tooltipHtml = `
+                      <div style="font-weight: bold; margin-bottom: 4px;">${d[xField]}</div>
+                      <div>${currentKey}: ${formatValue(value)}${yUnit ? " " + yUnit : ""}</div>
+                      <div style="margin-top: 4px;">Total: ${formatValue(total)}${yUnit ? " " + yUnit : ""}</div>
+                    `;
+                  }
                 
                   ChartHelpers.showTooltip(event, tooltipHtml);
                 })
@@ -1563,93 +1520,147 @@ const tooltipHtml = `
                     .style("top", (event.pageY - 28) + "px");
                 })
                 .on("mouseout", function() {
-                  // Reset all bar opacities
-                  d3.selectAll(".column")
-                    .transition()
-                    .duration(200)
-                    .style("opacity", 1);
-                  ChartHelpers.removeTooltip();
-                });                
-  
-              if (!isInitialDraw) {
-                rect.transition()
-                  .duration(500)
-                  .attr("y", rectY)
-                  .attr("height", rectHeight);
-              }
-              cumulative += value;
-            });
-          });
-        } else {
-          const innerScale = d3.scaleBand()
-            .domain(activeKeys)
-            .range([0, xScale.bandwidth()])
-            .padding(0.2);
-          categoryGroups.each(function(d) {
-            const groupSel = d3.select(this);
-            activeKeys.forEach(key => {
-              const value = d[key] || 0;
-              const rect = groupSel.append("rect")
-                .attr("class", `column rect-${key.replace(/\s+/g, "-")}`)
-                .attr("data-series", key)              
-                .attr("x", innerScale(key))
-                .attr("width", innerScale.bandwidth())
-                .attr("fill", colors[key] || "black")
-                .attr("y", isInitialDraw ? yScale(value) : yScale(0))
-                .attr("height", isInitialDraw ? (yScale(0) - yScale(value)) : 0)
-                .on("mouseover", function(event) {
-                  const currentKey = d3.select(this).attr("data-series");
-                  // Fade out all bars
-                  d3.selectAll(".column")
-                    .transition()
-                    .duration(200)
-                    .style("opacity", 0.2);
-                  // Highlight the current series
-                  d3.selectAll(`.column[data-series='${currentKey}']`)
-                    .transition()
-                    .duration(200)
-                    .style("opacity", 1);
-                
-                  const tooltipHtml = `<strong>${d[xField]}</strong><br/>
-                    <span style="color:${colors[key] || "black"}">&#9679;</span>
-                    ${key}: <strong>${formatValue(value)} ${yUnit}</strong>
-                  `;
-                  ChartHelpers.showTooltip(event, tooltipHtml);
-                })
-                
-                .on("mousemove", function(event) {
-                  d3.select(".tooltip")
-                    .style("left", (event.pageX + 10) + "px")
-                    .style("top", (event.pageY - 28) + "px");
-                })
-                .on("mouseout", function() {
-                  // Reset all bar opacities
                   d3.selectAll(".column")
                     .transition()
                     .duration(200)
                     .style("opacity", 1);
                   ChartHelpers.removeTooltip();
                 });
-                
-  
+
               if (!isInitialDraw) {
-                rect.transition()
-                  .duration(500)
-                  .attr("y", yScale(value))
-                  .attr("height", yScale(0) - yScale(value));
+                rect
+                  .attr("y", rectY)
+                  .attr("height", rectHeight);
               }
+
+              if (percentage && rectHeight > 12) {
+                const percent = d[`_${key}_percent`] || 0;
+                groupSel.append("text")
+                  .attr("x", xScale.bandwidth() / 2)
+                  .attr("y", rectY + rectHeight / 2 + 4)
+                  .attr("text-anchor", "middle")
+                  .attr("class", "bar-label")
+                  .style("font-size", "12px")
+                  .style("font-weight", "bold")
+                  .style("fill", "#000")
+                  .text(`${percent.toFixed(0)}%`);
+              }
+              
+              
+               else if (!percentage && rectHeight > 12 && value > 0) {
+                groupSel.append("text")
+                  .attr("x", xScale.bandwidth() / 2)
+                  .attr("y", rectY + rectHeight / 2 + 4)
+                  .attr("text-anchor", "middle")
+                  .attr("class", "bar-label")
+                  .style("font-size", "12px")
+                  .style("font-weight", "bold")
+                  .style("fill", "#000")
+                  .text(formatValue(value));
+              }
+        
+              cumulative += value;
             });
+        
+            if (!percentage && cumulative > 0) {
+              groupSel.append("text")
+                .attr("x", xScale.bandwidth() / 2)
+                .attr("y", yScale(cumulative) - 8)
+                .attr("text-anchor", "middle")
+                .attr("class", "column-total-label")
+                .style("font-size", "14px")
+                .style("font-weight", "bold")
+                .style("fill", "#000")
+                .text(formatValue(cumulative));
+            }
           });
+        } else {
+          const innerScale = d3.scaleBand()
+            .domain(activeKeys)
+            .range([0, xScale.bandwidth()])
+            .padding(0.2);
+            categoryGroups.each(function(d) {
+              const groupSel = d3.select(this);
+            
+              groupSel.insert("rect", ":first-child")
+                .attr("class", "hover-highlight")
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", xScale.bandwidth())
+                .attr("height", dims.height - 1)
+                .attr("fill", "#0022ff")
+                .attr("opacity", 0)
+                .style("pointer-events", "none");
+
+            
+              activeKeys.forEach(key => {
+                const value = d[key] || 0;
+            
+                const rect = groupSel.append("rect")
+                  .attr("class", `column rect-${key.replace(/\s+/g, "-")}`)
+                  .attr("data-series", key)
+                  .attr("data-category", d[xField])
+                  .attr("x", innerScale(key))
+                  .attr("width", innerScale.bandwidth())
+                  .attr("fill", colors[key] || "black")
+                  .attr("y", isInitialDraw ? yScale(value) : yScale(0))
+                  .attr("height", isInitialDraw ? (yScale(0) - yScale(value)) : 0)
+                  .on("mouseover", function(event) {
+                    const bar = d3.select(this);
+                    const currentKey = bar.attr("data-series");
+                    const currentCategory = bar.attr("data-category");
+            
+                    d3.selectAll(".column")
+                      .transition().duration(200)
+                      .style("opacity", 0.2);
+            
+                    d3.selectAll(`.column[data-series='${currentKey}']`)
+                      .transition().duration(200)
+                      .style("opacity", 1);
+            
+                    d3.select(this.parentNode).select(".hover-highlight")
+                      .raise()
+                      .transition().duration(200)
+                      .style("opacity", 0.2);
+            
+                    const tooltipHtml = `<strong>${d[xField]}</strong><br/>
+                      <span style="color:${colors[key] || "black"}">&#9679;</span>
+                      ${key}: <strong>${formatValue(value)} ${yUnit}</strong>
+                    `;
+                    ChartHelpers.showTooltip(event, tooltipHtml);
+                  })
+                  .on("mousemove", function(event) {
+                    d3.select(".tooltip")
+                      .style("left", (event.pageX + 10) + "px")
+                      .style("top", (event.pageY - 28) + "px");
+                  })
+                  .on("mouseout", function() {
+                    d3.selectAll(".column")
+                      .transition().duration(200)
+                      .style("opacity", 1);
+            
+                    d3.selectAll(".hover-highlight")
+                      .transition().duration(200)
+                      .style("opacity", 0);
+            
+                    ChartHelpers.removeTooltip();
+                  });
+            
+                if (!isInitialDraw) {
+                  rect
+                    .attr("y", yScale(value))
+                    .attr("height", yScale(0) - yScale(value));
+                }
+              });
+            });
+            
         }
       }
     }
   
-    // Initial draw of the columns (without transitions).
     drawColumns();
-    // Now set the flag to false so that subsequent updates (e.g. toggling via legend) animate.
     isInitialDraw = false;
   
-    // --- Create Legend for toggling individual series ---
     const legendGroup = svg.append("g").attr("class", "legend-group");
     const legendData = toggleState;
     const legendItems = legendGroup.selectAll(".legend-item")
@@ -1662,13 +1673,9 @@ const tooltipHtml = `
       .on("mouseover", function(event) {
         const seriesKey = d3.select(this).attr("data-series");
       
-        // Fade all bars and legend items
         d3.selectAll(".column").transition().duration(200).style("opacity", 0.2);
-        d3.selectAll(".legend-item").transition().duration(200).style("opacity", 0.2);
       
-        // Highlight matching series bars and legend
         d3.selectAll(`.column[data-series='${seriesKey}']`).transition().duration(200).style("opacity", 1);
-        d3.selectAll(`.legend-item[data-series='${seriesKey}']`).transition().duration(200).style("opacity", 1);  
       })
       .on("mouseout", function() {
         d3.selectAll(".column").transition().duration(200).style("opacity", 1);
@@ -1676,18 +1683,16 @@ const tooltipHtml = `
         ChartHelpers.removeTooltip();
       })      
       .on("click", function(event, d) {
-        // 1) Toggle this series’ active flag
         d.active = !d.active;
-        // update legend text decoration
+
         d3.select(this).select("text")
           .transition()
           .style("text-decoration", d.active ? "none" : "line-through");
-        // update legend dot opacity
+
         d3.select(this).select("circle")
           .transition()
           .style("fill-opacity", d.active ? 1 : 0.3);
     
-        // 2) Count how many series are still active
         let activeCount;
         if (groups) {
           activeCount = groups.reduce((count, group) => {
@@ -1701,7 +1706,37 @@ const tooltipHtml = `
         }
     
         if (activeCount > 0) {
-          // 3) Recompute maxVal based on active series
+          if (stacked && percentage) {
+            data.forEach(d => {
+              let activeKeys = [];
+          
+              if (groups) {
+                groups.forEach(group => {
+                  group.series.forEach(series => {
+                    if (toggleState.find(ts => ts.key === series)?.active) {
+                      activeKeys.push(series);
+                    }
+                  });
+                });
+              } else {
+                activeKeys = toggleState.filter(ts => ts.active).map(ts => ts.key);
+              }
+          
+              const total = activeKeys.reduce((sum, key) => sum + (d[key] || 0), 0);
+          
+              activeKeys.forEach(key => {
+                const val = d[key] || 0;
+                d[`_${key}_percent`] = total > 0 ? (val / total) * 100 : 0;
+              });
+          
+              toggleState
+                .filter(ts => !activeKeys.includes(ts.key))
+                .forEach(ts => {
+                  delete d[`_${ts.key}_percent`];
+                });
+            });
+          }
+          
           if (groups) {
             if (stacked) {
               maxVal = d3.max(data, row => {
@@ -1736,35 +1771,36 @@ const tooltipHtml = `
             }
           }
     
-          // 4) Update the y‐scale domain
           if (!(stacked && percentage)) {
             yScale.domain([0, maxVal + 5]).nice();
-            yAxis.transition().duration(500).call(d3.axisLeft(yScale).ticks(8));
+            yAxis.transition().duration(750).call(d3.axisLeft(yScale).ticks(8));
           } else {
             yAxis.transition()
-              .duration(500)
+              .duration(750)
               .call(d3.axisLeft(yScale).tickValues([0, 25, 50, 75, 100]));
           }          
 
-    
-          // 5) Bring the axis group back to full opacity
           yAxis.style("opacity", 1);
     
-          // 6) Transition and redraw the y‐axis ticks & labels
           yAxis.transition()
-  .duration(500)
+  .duration(750)
   .call(stacked && percentage
     ? d3.axisLeft(yScale).tickValues([0, 25, 50, 75, 100])
     : d3.axisLeft(yScale).ticks(8)
   );
 
-          // option: remove the domain line if you prefer
           yAxis.select(".domain").remove();
     
-          // 7) Rebuild the grid lines
-          svg.selectAll(".grid").remove();
-          svg.append("g")
-  .attr("class", "grid")
+let grid = svg.select(".grid");
+if (grid.empty()) {
+  grid = svg.append("g")
+    .attr("class", "grid")
+    .style("opacity", 0.1);
+}
+
+grid
+  .transition()
+  .duration(750)
   .style("opacity", 0.1)
   .call(
     (stacked && percentage
@@ -1774,20 +1810,20 @@ const tooltipHtml = `
     .tickSize(-dims.width)
     .tickFormat("")
   )
-            .call(g => g.selectAll(".domain").remove());
+  .on("start", function () { d3.select(this).selectAll(".domain").remove(); })
+  .on("end", function () { d3.select(this).selectAll(".domain").remove(); });
+
     
         } else {
-          // No series active: fade the axis & grid out
           yAxis.transition()
-            .duration(500)
+            .duration(750)
             .style("opacity", 0);
           svg.selectAll(".grid")
             .transition()
-            .duration(500)
+            .duration(750)
             .style("opacity", 0);
         }
     
-        // 8) Finally, redraw the bars/columns to reflect the new active set
         drawColumns();
       });
       
@@ -1803,7 +1839,6 @@ const tooltipHtml = `
       .style("font-size", "14px")
       .text(d => d.key);
   
-    // Position legend items horizontally.
     let xOffset = 0;
     legendItems.attr("transform", function() {
       const itemWidth = this.getBBox().width + 20;
@@ -1812,9 +1847,6 @@ const tooltipHtml = `
       return transform;
     });
   
-    // --- LEGEND PLACEMENT ---
-    // If the chart is in grouped AND stacked mode, position the legend in the center bottom.
-    // Otherwise, use the original positions.
     const legendBBox = legendGroup.node().getBBox();
     if (groups && stacked || percentage && stacked) {
       legendGroup.attr("transform", `translate(${(dims.width - legendBBox.width)/2}, ${dims.height + 70})`);
@@ -1833,7 +1865,6 @@ const tooltipHtml = `
       legendGroup.attr("transform", `translate(${(dims.width - legendBBox.width)/2}, ${dims.height + 70})`);
     }
   
-    // --- Common Title and Axis Labels ---
     if (title) {
       svg.append("text")
         .attr("x", 0)
@@ -1865,10 +1896,6 @@ const tooltipHtml = `
     }
   },
 
-
-
-
-
   renderBarChart({
     containerId,
     data,
@@ -1886,97 +1913,56 @@ const tooltipHtml = `
     height = 900
   }) {
     d3.select(containerId).select("svg").remove();
+  
     const dims = ChartHelpers.getDimensions(margins, width + 40, height);
     const svg = ChartHelpers.createSVG(containerId, margins, width, height);
     const seriesState = series.map(key => ({ key, active: true }));
     const formatValue = d3.format(",");
+  
     const yDomain = data.map(d => d[yField]);
     const yScale = d3.scaleBand()
       .domain(yDomain)
       .range([0, dims.height])
       .padding(0.1);
+  
     const xScale = d3.scaleLinear().range([0, dims.width]);
+    const initialMax = d3.max(data, d =>
+      stacked
+        ? series.reduce((sum, key) => sum + (d[key] || 0), 0)
+        : d3.max(series, key => d[key] || 0)
+    ) || 10;
+    xScale.domain([0, initialMax + 5]).nice();
   
-    // Add Y-axis
-    const yAxis = svg.append("g")
-      .attr("class", "y axis")
-      .call(d3.axisLeft(yScale).tickSizeOuter(0));
-  
-    svg.append("line")
-      .attr("x1", 0)
-      .attr("x2", 0)
-      .attr("y1", 0)
-      .attr("y2", dims.height)
-      .attr("stroke", "#000")
-      .attr("stroke-width", 1);
-  
-    // X-axis container
-    const xAxis = svg.append("g")
+    let xAxisGroup = svg.append("g")
       .attr("class", "x axis")
-      .attr("transform", `translate(0, ${dims.height})`);
+      .attr("transform", `translate(0, ${dims.height})`)
+      .call(d3.axisBottom(xScale).tickSizeOuter(0))
+      .call(g => g.select(".domain").remove());
   
-    const gridGroup = svg.append("g").attr("class", "grid-group");
+    svg.append("g")
+      .attr("class", "y axis")
+      .call(d3.axisLeft(yScale).tickSizeOuter(0))
+      .call(g => g.select(".domain").remove());
   
-    // Set xScale domain and grid lines
-    if (stacked) {
-      xScale.domain([
-        0,
-        d3.max(data, d => series.reduce((sum, key) => sum + (d[key] || 0), 0)) + 10
-      ]);
-      const xTicks = xScale.ticks(10);
-      svg.append("g")
-        .attr("class", "grid")
-        .attr("transform", `translate(0, ${dims.height})`)
-        .style("opacity", 0.1)
-        .call(d3.axisBottom(xScale)
-          .tickValues(xTicks)
-          .tickSize(-dims.height)
-          .tickFormat(""));
-    } else {
-      const gridOffset = 10;
-      yScale.domain().forEach((cat, i, arr) => {
-        if (i === 0) {
-          gridGroup.append("line")
-            .attr("x1", 0).attr("x2", dims.width)
-            .attr("y1", yScale(cat) - gridOffset)
-            .attr("y2", yScale(cat) - gridOffset)
-            .attr("stroke", "#e0e0e0")
-            .attr("stroke-width", 1)
-            .style("opacity", 0.7);
-        }
-        if (i < arr.length - 1) {
-          gridGroup.append("line")
-            .attr("x1", 0).attr("x2", dims.width)
-            .attr("y1", yScale(cat) + yScale.bandwidth() + gridOffset)
-            .attr("y2", yScale(cat) + yScale.bandwidth() + gridOffset)
-            .attr("stroke", "#e0e0e0")
-            .attr("stroke-width", 1)
-            .style("opacity", 0.7);
-        }
-      });
-    }
+    let gridAxisGroup = svg.append("g")
+      .attr("class", "grid")
+      .attr("transform", `translate(0, ${dims.height})`)
+      .style("opacity", 0.1)
+      .call(d3.axisBottom(xScale).tickSize(-dims.height).tickFormat(""))
+      .call(g => g.select(".domain").remove());
   
     const barsGroup = svg.append("g").attr("class", "bars-group");
   
-    // Helper to generate a safe CSS class name
     function safeClass(key) {
       return key.replace(/\s+/g, '-').replace(/[^\w-]/g, '');
     }
   
-    // Helper to generate a pill-shaped path (optionally rounded)
     function pillPath(widthVal, heightVal, isRounded = true) {
       if (!isRounded) return `M0,0 H${widthVal} V${heightVal} H0 Z`;
       const r = Math.min(heightVal / 2, widthVal);
-      if (widthVal <= 0) return "";
-      return `
-        M0,0
-        H${widthVal - r}
-        A${r},${r} 0 0 1 ${widthVal},${r}
-        V${heightVal - r}
-        A${r},${r} 0 0 1 ${widthVal - r},${heightVal}
-        H0
-        Z
-      `;
+      if (widthVal <= 0) return '';
+      return `M0,0 H${widthVal - r} A${r},${r} 0 0 1 ${widthVal},${r}
+              V${heightVal - r} A${r},${r} 0 0 1 ${widthVal - r},${heightVal} H0 Z`;
     }
   
     function drawBars() {
@@ -1984,41 +1970,50 @@ const tooltipHtml = `
       svg.selectAll(".bar-label").remove();
   
       const activeSeries = seriesState.filter(s => s.active).map(s => s.key);
+  
+      if (activeSeries.length === 0) {
+        svg.select(".x.axis").remove();
+        svg.select(".grid").remove();
+        return;
+      }
+  
       const activeData = data.map(d => {
         const entry = { ...d };
-        Object.keys(entry).forEach(key => {
-          if (!activeSeries.includes(key) && key !== yField) {
-            delete entry[key];
-          }
+        Object.keys(entry).forEach(k => {
+          if (k !== yField && !activeSeries.includes(k)) delete entry[k];
         });
         return entry;
       });
   
-      let maxVal;
-      if (activeSeries.length === 0) {
-        maxVal = 10;
-        xScale.domain([0, maxVal]);
-      } else {
-        maxVal = stacked
-          ? d3.max(activeData, d => activeSeries.reduce((sum, key) => sum + (d[key] || 0), 0))
-          : d3.max(activeData, d => d3.max(activeSeries, key => d[key] || 0));
-          xScale.domain([0, maxVal + 5]).nice();
-      }
+      const maxVal = stacked
+        ? d3.max(activeData, d => activeSeries.reduce((sum, key) => sum + (d[key] || 0), 0))
+        : d3.max(activeData, d => d3.max(activeSeries, key => d[key] || 0));
   
+      xScale.domain([0, maxVal + 5]).nice();
       const xTicks = xScale.ticks(10);
-      xAxis.transition().duration(500).call(d3.axisBottom(xScale).tickValues(xTicks));
   
-      svg.selectAll(".grid").remove();
-      if (stacked) {
-        svg.append("g")
+      if (svg.select(".x.axis").empty()) {
+        xAxisGroup = svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", `translate(0, ${dims.height})`);
+      }
+      xAxisGroup.transition()
+        .duration(750)
+        .call(d3.axisBottom(xScale).tickValues(xTicks).tickSizeOuter(0))
+        .on("start", () => xAxisGroup.select(".domain").remove())
+        .on("end", () => xAxisGroup.select(".domain").remove());
+  
+      if (svg.select(".grid").empty()) {
+        gridAxisGroup = svg.append("g")
           .attr("class", "grid")
           .attr("transform", `translate(0, ${dims.height})`)
-          .style("opacity", 0.1)
-          .call(d3.axisBottom(xScale)
-            .tickValues(xTicks)
-            .tickSize(-dims.height)
-            .tickFormat(""));
+          .style("opacity", 0.1);
       }
+      gridAxisGroup.transition()
+        .duration(750)
+        .call(d3.axisBottom(xScale).tickValues(xTicks).tickSize(-dims.height).tickFormat(""))
+        .on("start", () => gridAxisGroup.select(".domain").remove())
+        .on("end", () => gridAxisGroup.select(".domain").remove());
   
       const categoryGroups = barsGroup.selectAll(".category-group")
         .data(data)
@@ -2029,56 +2024,49 @@ const tooltipHtml = `
   
       if (stacked) {
         categoryGroups.each(function (d) {
-          let xOffset = 0;
-          activeSeries.forEach((key, i) => {
-            const value = d[key] || 0;
-            const className = safeClass(key);
-            const barGroup = d3.select(this);
-            barGroup.append("path")
+          let offset = 0;
+          activeSeries.forEach(key => {
+            const val = d[key] || 0;
+            const cls = safeClass(key);
+            const g = d3.select(this);
+            g.append("path")
               .datum({ ...d, seriesKey: key })
-              .attr("class", `bar bar-${className}`)
-              .attr("transform", `translate(${xOffset}, 0)`)
-              .attr("d", pillPath(xScale(value), yScale.bandwidth(), false))
+              .attr("class", `bar bar-${cls}`)
+              .attr("transform", `translate(${offset},0)`)
+              .attr("d", pillPath(xScale(val), yScale.bandwidth(), false))
               .attr("fill", colors[key] || "black")
-              .style("fill-opacity", 1)
-              .on("mouseover", function (event, d) {
-                const seriesKey = d.seriesKey;
-                const category = d[yField];
-                const value = d[seriesKey] || 0;
-                const color = colors[seriesKey] || "black";
-                barsGroup.selectAll(`.bar`).transition().style("opacity", bar => {
-                  return bar.seriesKey === seriesKey ? 1 : 0.3;
-                });
+              .on("mouseover", function(event, d) {
+                const currentKey = d.seriesKey;
+                const val = d[currentKey] || 0;
+              
+                d3.selectAll(".bar").transition().duration(200).style("opacity", 0.2);
+              
+                d3.selectAll(`.bar-${safeClass(currentKey)}`).transition().duration(200).style("opacity", 1);
+              
                 const tooltipHtml = `
-                  ${category}<br/>
-                  <span style="color:${color}">&#9679;</span> ${seriesKey}: <strong>${formatValue(value)}</strong>${xUnit}
+                  <strong>${d[yField]}</strong><br/>
+                  <span style="color:${colors[currentKey] || "black"}">&#9679;</span>
+                  ${currentKey}: <strong>${formatValue(val)}${xUnit ? " " + xUnit : ""}</strong>
                 `;
                 ChartHelpers.showTooltip(event, tooltipHtml);
               })
-              .on("mousemove", function (event) {
-                d3.select(".tooltip")
-                  .style("left", (event.pageX + 10) + "px")
-                  .style("top", (event.pageY - 28) + "px");
-              })
-              .on("mouseout", function () {
-                barsGroup.selectAll(`.bar`).transition().style("opacity", 1);
+              .on("mousemove", ChartHelpers.moveTooltip)
+              .on("mouseout", function() {
+                d3.selectAll(".bar").transition().duration(200).style("opacity", 1);
                 ChartHelpers.removeTooltip();
-              });
-  
-            if (showLabels && value > 0) {
-              barGroup.append("text")
-                .attr("class", `bar-label label-${className}`)
-                .attr("x", xOffset + xScale(value) / 2)
+              });              
+            if (showLabels && val > 0) {
+              g.append("text")
+                .attr("class", `bar-label label-${cls}`)
+                .attr("x", offset + xScale(val) / 2)
                 .attr("y", yScale.bandwidth() / 2)
                 .attr("dy", "0.35em")
                 .attr("text-anchor", "middle")
                 .style("fill", "#fff")
-                .style("font-size", "12px")
                 .style("font-weight", "bold")
-                .text(formatValue(value));
+                .text(formatValue(val));
             }
-  
-            xOffset += xScale(value);
+            offset += xScale(val);
           });
         });
       } else {
@@ -2088,51 +2076,46 @@ const tooltipHtml = `
           .paddingInner(0.2);
   
         activeSeries.forEach(key => {
-          const className = safeClass(key);
-          categoryGroups
+          const cls = safeClass(key);
+          categoryGroups.selectAll(`.bar-${cls}`)
+            .data(d => [{ ...d, seriesKey: key }])
+            .enter()
             .append("path")
-            .datum(d => ({ ...d, seriesKey: key }))
-            .attr("class", `bar bar-${className}`)
-            .attr("transform", `translate(0, ${subScale(key)})`)
+            .attr("class", `bar bar-${cls}`)
+            .attr("transform", d => `translate(0,${subScale(key)})`)
             .attr("d", d => pillPath(xScale(d[key] || 0), subScale.bandwidth()))
             .attr("fill", colors[key] || "black")
-            .style("fill-opacity", 1)
-            .on("mouseover", function (event, d) {
-              const seriesKey = d.seriesKey;
-              const category = d[yField];
-              const value = d[seriesKey] || 0;
-              const color = colors[seriesKey] || "black";
-              barsGroup.selectAll(`.bar`).transition().style("opacity", bar => {
-                return bar.seriesKey === seriesKey ? 1 : 0.3;
-              });
+            .on("mouseover", function(event, d) {
+              const currentKey = d.seriesKey;
+              const val = d[currentKey] || 0;
+            
+              d3.selectAll(".bar").transition().duration(200).style("opacity", 0.2);
+            
+              d3.selectAll(`.bar-${safeClass(currentKey)}`).transition().duration(200).style("opacity", 1);
+            
               const tooltipHtml = `
-                ${category}<br/>
-                <span style="color:${color}">&#9679;</span> ${seriesKey}: <strong>${formatValue(value)}</strong>${xUnit}
+                <strong>${d[yField]}</strong><br/>
+                <span style="color:${colors[currentKey] || "black"}">&#9679;</span>
+                ${currentKey}: <strong>${formatValue(val)}${xUnit ? " " + xUnit : ""}</strong>
               `;
               ChartHelpers.showTooltip(event, tooltipHtml);
             })
-            .on("mousemove", function (event) {
-              d3.select(".tooltip")
-                .style("left", (event.pageX + 10) + "px")
-                .style("top", (event.pageY - 28) + "px");
-            })
-            .on("mouseout", function () {
-              barsGroup.selectAll(`.bar`).transition().style("opacity", 1);
+            .on("mousemove", ChartHelpers.moveTooltip)
+            .on("mouseout", function() {
+              d3.selectAll(".bar").transition().duration(200).style("opacity", 1);
               ChartHelpers.removeTooltip();
-            })
+            })            
             .transition()
-            .duration(500)
+            .duration(750)
             .attr("d", d => pillPath(xScale(d[key] || 0), subScale.bandwidth()));
   
           if (showLabels) {
-            categoryGroups
-              .append("text")
+            categoryGroups.append("text")
               .datum(d => ({ ...d, seriesKey: key }))
-              .attr("class", `bar-label label-${className}`)
+              .attr("class", `bar-label label-${cls}`)
               .attr("x", d => xScale(d[key] || 0) + 5)
               .attr("y", subScale(key) + subScale.bandwidth() / 2)
               .attr("dy", "0.35em")
-              .style("font-size", "12px")
               .style("font-weight", "bold")
               .text(d => formatValue(d[key] || 0));
           }
@@ -2142,123 +2125,97 @@ const tooltipHtml = `
   
     drawBars();
   
-    // Add chart title
-    if (title) {
-      svg.append("text")
-        .attr("x", dims.width / 2)
-        .attr("y", -20)
-        .attr("text-anchor", "middle")
-        .style("font-size", "22px")
-        .style("font-weight", "bold")
-        .text(title);
+    if (title) svg.append("text")
+      .attr("x", dims.width / 2)
+      .attr("y", -20)
+      .attr("text-anchor", "middle")
+      .style("font-size", "22px")
+      .style("font-weight", "bold")
+      .text(title);
+  
+    if (xLabel) svg.append("text")
+      .attr("class", "x label")
+      .attr("text-anchor", "middle")
+      .attr("x", dims.width / 2)
+      .attr("y", dims.height + margins.bottom - 40)
+      .text(`${xLabel}${xUnit ? ` (${xUnit})` : ''}`);
+  
+    if (yLabel) svg.append("text")
+      .attr("class", "y label")
+      .attr("transform", "rotate(-90)")
+      .attr("x", -dims.height / 2)
+      .attr("y", -margins.left + 20)
+      .style("font-size", "14px")
+      .text(yLabel);  
+  
+    const legendGroup = svg.append("g").attr("class", "legend-group");
+    const legendItems = legendGroup.selectAll(".legend-item")
+      .data(seriesState)
+      .enter()
+      .append("g")
+      .attr("class", "legend-item")
+      .style("cursor", "pointer")
+      .on("mouseover", function(event) {
+        const seriesKey = d3.select(this).datum().key;
+      
+        d3.selectAll(".bar").transition().duration(200).style("opacity", 0.2);
+      
+        d3.selectAll(`.bar-${safeClass(seriesKey)}`).transition().duration(200).style("opacity", 1);
+        d3.select(this).transition().duration(200).style("opacity", 1);
+      })
+      .on("mouseout", function() {
+        d3.selectAll(".bar").transition().duration(200).style("opacity", 1);
+        ChartHelpers.removeTooltip();
+      })
+      .on("click", function(event, d) {
+        d.active = !d.active;
+      
+        d3.select(this).select("text")
+          .transition().style("text-decoration", d.active ? "none" : "line-through");
+      
+        d3.select(this).select("circle")
+          .transition().style("fill-opacity", d.active ? 1 : 0.7);
+      
+        drawBars();
+      });
+      
+  
+    legendItems.append("circle")
+      .attr("r", 6)
+      .attr("cx", 0)
+      .attr("cy", 0)
+      .style("fill", d => colors[d.key] || "black");
+    legendItems.append("text")
+      .attr("x", 12)
+      .attr("y", 4)
+      .style("font-size", "14px")
+      .text(d => d.key);
+  
+    if (!stacked) {
+      const lh = 24;
+      legendItems.attr("transform", (d,i) => `translate(0, ${i * lh})`);
+      const bb = legendGroup.node().getBBox();
+      legendGroup.insert("rect", ":first-child")
+        .attr("x", bb.x - 10)
+        .attr("y", bb.y - 10)
+        .attr("width", bb.width + 20)
+        .attr("height", bb.height + 20)
+        .attr("fill", "#fff")
+        .attr("stroke", "#d3d3d3")
+        .attr("rx", 5).attr("ry", 5);
+      legendGroup.attr("transform", `translate(${dims.width - bb.width - 50}, 75)`);
+    } else {
+      let off = 0;
+      legendItems.attr("transform", function(d,i) {
+        const w = this.getBBox().width;
+        const t = `translate(${off}, 0)`;
+        off += w + 20;
+        return t;
+      });
+      const lb = legendGroup.node().getBBox();
+      const cx = (dims.width - lb.width)/2;
+      legendGroup.attr("transform", `translate(${cx}, ${dims.height + 70})`);
     }
-    // Add x-axis label
-    if (xLabel) {
-      svg.append("text")
-        .attr("class", "x label")
-        .attr("text-anchor", "middle")
-        .attr("x", dims.width / 2)
-        .attr("y", dims.height + margins.bottom - 40)
-        .style("font-size", "14px")
-        .text(xLabel + (xUnit ? ` (${xUnit})` : ""));
-    }
-    // Add y-axis label
-    if (yLabel) {
-      svg.append("text")
-        .attr("class", "y label")
-        .attr("text-anchor", "middle")
-        .attr("transform", "rotate(-90)")
-        .attr("x", -dims.height / 2)
-        .attr("y", -margins.left + 20)
-        .style("font-size", "14px")
-        .text(yLabel);
-    }
-    // Create legend group and legend items
-const legendGroup = svg.append("g").attr("class", "legend-group");
-const legendItems = legendGroup.selectAll(".legend-item")
-  .data(seriesState)
-  .enter()
-  .append("g")
-  .attr("class", "legend-item")
-  .style("cursor", "pointer")
-  .on("mouseover", function (event, d) {
-    seriesState.forEach(s => {
-      if (s.key !== d.key && s.active) {
-        barsGroup.selectAll(`.bar-${safeClass(s.key)}`).transition().style("opacity", 0.3);
-      }
-    });
-  })
-  .on("mouseout", function () {
-    seriesState.forEach(s => {
-      if (s.active) {
-        barsGroup.selectAll(`.bar-${safeClass(s.key)}`).transition().style("opacity", 1);
-      }
-    });
-  })
-  .on("click", function (event, d) {
-    d.active = !d.active;
-    d3.select(this).select("text")
-      .transition()
-      .style("text-decoration", d.active ? "none" : "line-through");
-    d3.select(this).select("circle")
-      .transition()
-      .style("fill-opacity", d.active ? 1 : 0.7);
-    drawBars();
-  });
-
-// Add a circle and label for each legend item
-legendItems.append("circle")
-  .attr("r", 6)
-  .attr("cx", 0)
-  .attr("cy", 0)
-  .style("fill", d => colors[d.key] || "black");
-
-legendItems.append("text")
-  .attr("x", 12)  // some horizontal spacing from the circle
-  .attr("y", 4)
-  .style("font-size", "14px")
-  .text(d => d.key);
-
-// Legend layout
-if (!stacked) {
-  // Non-stacked: one item per line with a background rect
-  const lineHeight = 24; // vertical gap between rows
-
-  legendItems.attr("transform", function(d, i) {
-    return `translate(0, ${i * lineHeight})`;
-  });
-
-  // Insert background rect behind legend items
-  const bbox = legendGroup.node().getBBox();
-  legendGroup.insert("rect", ":first-child")
-    .attr("x", bbox.x - 10)
-    .attr("y", bbox.y - 10)
-    .attr("width", bbox.width + 20)
-    .attr("height", bbox.height + 20)
-    .attr("fill", "#fff")
-    .attr("stroke", "#d3d3d3")
-    .attr("rx", 5)
-    .attr("ry", 5);
-
-  // Position the legend group near top-right (example)
-  legendGroup.attr("transform", `translate(${dims.width - bbox.width - 20}, 20)`);
-} else {
-  // Place legend items horizontally (like your screenshot)
-  let xOffset = 0;
-  legendItems.attr("transform", function(d, i) {
-    const thisWidth = this.getBBox().width;
-    const transform = `translate(${xOffset}, 0)`;
-    xOffset += thisWidth + 20; // Adjust spacing as needed
-    return transform;
-  });
-
-  // Get the bounding box of the legend group after positioning items
-  const legendBbox = legendGroup.node().getBBox();
-  // Compute the horizontal offset to center the legend
-  const centerX = (dims.width - legendBbox.width) / 2;
-  // Position the legend group below the chart (e.g., 30 pixels below)
-  legendGroup.attr("transform", `translate(${centerX}, ${dims.height + 70})`);
-}
   },
 
   renderPieChart({
@@ -2283,7 +2240,6 @@ if (!stacked) {
       .append("g")
       .attr("transform", `translate(${margins.left}, ${margins.top})`);
 
-    // For non-semi circle mode, title appears at the top
     if (!isSemiCircle && title) {
       svg.append("text")
         .attr("x", dims.width / 2)
@@ -2310,30 +2266,23 @@ if (!stacked) {
       .attr("transform", `translate(${dims.width / 2}, ${dims.height / 2 + verticalShift + extraTopSpace})`);
 
       if (isSemiCircle && title) {
-        // Create the text element in the pieGroup.
         const textElement = pieGroup.append("text")
           .attr("class", "center-title")
           .attr("text-anchor", "middle")
           .style("font-size", "22px")
           .style("font-weight", "bold");
         
-        // Split the title by "_" characters and add tspans for each line.
         const titleLines = title.split("_");
         titleLines.forEach((line, i) => {
           textElement.append("tspan")
             .attr("x", 0)
-            .attr("dy", i === 0 ? "0" : "1.2em") // Adjust line spacing if needed.
+            .attr("dy", i === 0 ? "0" : "1.2em")
             .text(line);
         });
         
-        // Delay execution to ensure the text is rendered.
         setTimeout(() => {
-          // Get the bounding box of the rendered text.
           const bbox = textElement.node().getBBox();
           
-          // If your semicircle's bottom is at y = 0 in the pieGroup, then you need to shift the text
-          // upward so that its bottom (bbox.y + bbox.height) aligns with 0.
-          // If your desired bottom is different (say, y = radius), adjust accordingly.
           const shiftY = - (bbox.y + bbox.height);
           
           textElement.attr("transform", `translate(0, ${shiftY})`);
@@ -2446,7 +2395,6 @@ if (!stacked) {
         });
       }
 
-      // Add interactivity to labels
       pieGroup.selectAll(".slice-role")
         .on("mouseover", function(event, d) {
           const label = d.data.label;
@@ -2464,7 +2412,7 @@ if (!stacked) {
         })
         .on("mouseout", function() {
           pieGroup.selectAll("path").transition().duration(200).style("opacity", 1);
-          tooltip.transition().duration(500).style("opacity", 0);
+          tooltip.transition().duration(750).style("opacity", 0);
         })
         .on("click", function(event, d) {
           const label = d.data.label;
@@ -2552,7 +2500,7 @@ if (!stacked) {
         })
         .on("mouseout", function() {
           sliceGroups.selectAll("path").transition().duration(200).style("opacity", 1);
-          tooltip.transition().duration(500).style("opacity", 0);
+          tooltip.transition().duration(750).style("opacity", 0);
         });
 
     } else {
@@ -2580,7 +2528,7 @@ if (!stacked) {
         })
         .on("mouseout", function() {
           pieGroup.selectAll("path").transition().duration(200).style("opacity", 1);
-          tooltip.transition().duration(500).style("opacity", 0);
+          tooltip.transition().duration(750).style("opacity", 0);
         })
         .on("click", function(event, d) {
           const slicePath = d3.select(this);
@@ -2602,15 +2550,1009 @@ if (!stacked) {
           }
         });
     }
+  },
+
+  renderScatterChart({
+    containerId,
+    data,
+    xField,
+    yField,
+    categoryField,
+    title = "",
+    xLabel = "",
+    yLabel = "",
+    xUnit = "",
+    yUnit = "",
+    colors = {},
+    shapeMap = {},
+    margins = { top: 60, right: 90, bottom: 115, left: 90 },
+    width = 1400,
+    height = 900,
+    enableJitter = false,
+    jitterAmount = 5,
+    forceCategoricalX = false
+  }) {
+    const dims = ChartHelpers.getDimensions(margins, width, height);
+    const svg = ChartHelpers.createSVG(containerId, margins, width, height);
+  
+    const isCategoricalX = forceCategoricalX || typeof data[0][xField] === "string";
+
+    if (isCategoricalX) {
+      data.forEach(d => { d[xField] = String(d[xField]); });
+    }
+    
+  
+    let xScale;
+    if (isCategoricalX) {
+      const xCategories = [...new Set(data.map(d => d[xField]))];
+      xScale = d3.scalePoint().domain(xCategories).range([0, dims.width]).padding(0.5);
+    } else {
+      const xExtent = d3.extent(data, d => d[xField]);
+      xScale = d3.scaleLinear().domain(xExtent).range([0, dims.width]).nice();
+    }
+  
+    const yExtent = d3.extent(data, d => d[yField]);
+    const yScale = d3.scaleLinear().domain(yExtent).range([dims.height, 0]).nice();
+  
+    svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", `translate(0, ${dims.height})`)
+      .call(isCategoricalX ? d3.axisBottom(xScale) : d3.axisBottom(xScale).ticks(10))
+      .call(g => g.select(".domain").remove());
+  
+    svg.append("g")
+      .attr("class", "y axis")
+      .call(d3.axisLeft(yScale))
+      .call(g => g.select(".domain").remove());
+  
+    svg.append("g")
+      .attr("class", "grid")
+      .style("opacity", 0.1)
+      .call(d3.axisLeft(yScale).tickSize(-dims.width).tickFormat(""))
+      .call(g => g.select(".domain").remove());
+  
+    const tooltip = ChartHelpers.createTooltip();
+    const shape = d3.symbol().size(64);
+    const categories = Array.from(new Set(data.map(d => d[categoryField])));
+
+const highlightDot = svg.append("path")
+.attr("class", "highlight-dot")
+.attr("fill", "none")
+.style("pointer-events", "none")
+.style("display", "none");
+
+  
+    svg.selectAll(".dot")
+      .data(data)
+      .enter()
+      .append("path")
+      .attr("class", "dot")
+      .attr("transform", d => {
+        const jitterX = enableJitter && isCategoricalX
+          ? (Math.random() - 0.5) * xScale.step() * 0.5
+          : enableJitter
+            ? (Math.random() - 0.5) * jitterAmount
+            : 0;
+        const jitterY = enableJitter ? (Math.random() - 0.5) * jitterAmount : 0;
+      
+        d._jitterX = jitterX;
+        d._jitterY = jitterY;
+      
+        const xPos = (isCategoricalX ? xScale(d[xField]) : xScale(d[xField])) + jitterX;
+        const yPos = yScale(d[yField]) + jitterY;
+        return `translate(${xPos}, ${yPos})`;
+      })      
+      .attr("d", d => shape.type(enableJitter ? d3.symbolCircle : (shapeMap[d[categoryField]] || d3.symbolCircle))())
+      .attr("fill", d => colors[d[categoryField]] || "gray")
+      .attr("opacity", 0.7)
+      .on("mouseover", function(event, d) {
+        const currentCategory = d[categoryField];
+      
+        svg.selectAll(".dot")
+          .transition()
+          .duration(200)
+          .style("opacity", o => o[categoryField] === currentCategory ? 1 : 0.1);
+      
+        tooltip.html(
+            enableJitter
+              ? `<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                   <span style="width: 12px; height: 12px; background: ${colors[d[categoryField]] || 'black'}; border-radius: 50%; display: inline-block;"></span>
+                   <strong>${d[categoryField]}</strong>
+                 </div>
+                 <div>Measurement: ${(+d[yField]).toFixed(3)}</div>`
+              : `<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                   <span style="width: 12px; height: 12px; background: ${colors[d[categoryField]] || 'black'}; border-radius: 50%; display: inline-block;"></span>
+                   <strong>${d[categoryField]}</strong>
+                 </div>
+                 ${xField}: <strong>${d[xField]} ${xUnit}</strong><br/>
+                 ${yField}: <strong>${(+d[yField])} ${yUnit}</strong>`
+          )
+          .style("display", "block")
+          .style("left", (event.pageX + 12) + "px")
+          .style("top", (event.pageY - 28) + "px");
+      
+        const jitterX = d._jitterX || 0;
+        const jitterY = d._jitterY || 0;
+        const xPos = (isCategoricalX ? xScale(d[xField]) : xScale(d[xField])) + jitterX;
+        const yPos = yScale(d[yField]) + jitterY;
+      
+        highlightDot
+          .attr("transform", `translate(${xPos}, ${yPos})`)
+          .attr("d", d3.symbol()
+            .type(enableJitter ? d3.symbolCircle : (shapeMap[d[categoryField]] || d3.symbolCircle))
+            .size(196)
+          )
+          .attr("fill", colors[d[categoryField]] || "gray")
+          .style("display", "block")
+          .style("opacity", 1);
+      })
+      
+      .on("mousemove", event => {
+        tooltip
+          .style("left", (event.pageX + 12) + "px")
+          .style("top", (event.pageY - 28) + "px");
+      })
+      
+      .on("mouseout", function() {
+        svg.selectAll(".dot")
+          .transition()
+          .duration(200)
+          .style("opacity", 0.7);
+      
+        tooltip.style("display", "none");
+        highlightDot.style("display", "none");
+      });
+      
+      
+  
+    if (title) {
+      svg.append("text")
+        .attr("x", 0)
+        .attr("y", -20)
+        .attr("dy", -20)
+        .attr("text-anchor", "start")
+        .style("font-size", "22px")
+        .style("font-weight", "bold")
+        .text(title);
+    }
+  
+    svg.append("text")
+      .attr("x", dims.width / 2)
+      .attr("y", dims.height + margins.bottom - (enableJitter ? 40 : 60))
+      .attr("text-anchor", "middle")
+      .style("font-size", "14px")
+      .text(xLabel);
+  
+    svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("x", -dims.height / 2)
+      .attr("y", -margins.left + 40)
+      .attr("text-anchor", "middle")
+      .style("font-size", "14px")
+      .text(yLabel);
+  
+    if (!enableJitter) {
+    const categoryState = categories.map(key => ({ key, active: true }));
+    const legendGroup = svg.append("g").attr("class", "legend-group");
+  
+    const legendItems = legendGroup.selectAll(".legend-item")
+      .data(categoryState)
+      .enter()
+      .append("g")
+      .attr("class", "legend-item")
+      .style("cursor", "pointer")
+      .on("mouseover", function(event, d) {
+        svg.selectAll(".dot")
+          .transition().duration(200)
+          .style("opacity", o => o[categoryField] === d.key ? 1 : 0.1);
+      })
+      .on("mouseout", function() {
+        svg.selectAll(".dot")
+          .transition().duration(200)
+          .style("opacity", d => categoryState.find(c => c.key === d[categoryField])?.active ? 0.7 : 0);
+      })
+      .on("click", function(event, d) {
+        d.active = !d.active;
+      
+        d3.select(this)
+          .select("text")
+          .transition()
+          .style("text-decoration", d.active ? "none" : "line-through");
+      
+        d3.select(this)
+          .select("path")
+          .transition()
+          .style("fill-opacity", d.active ? 1 : 0.3);
+      
+        const activeCategories = categoryState.filter(c => c.active).map(c => c.key);
+        const filteredData = data.filter(d => activeCategories.includes(d[categoryField]));
+      
+        if (filteredData.length === 0) {
+          svg.select(".x.axis").transition().duration(750).style("opacity", 0);
+          svg.select(".y.axis").transition().duration(750).style("opacity", 0);
+          svg.selectAll(".grid").transition().duration(750).style("opacity", 0);
+          svg.selectAll(".dot").transition().duration(500).style("opacity", 0).style("display", "none");
+          return;
+        }
+      
+        svg.select(".x.axis").style("opacity", 1);
+        svg.select(".y.axis").style("opacity", 1);
+        svg.selectAll(".grid").style("opacity", 0.1);
+      
+        if (!isCategoricalX) {
+          const newX = d3.extent(filteredData, d => d[xField]);
+          xScale.domain(newX).nice();
+        }
+      
+        const newY = d3.extent(filteredData, d => d[yField]);
+        yScale.domain(newY).nice();
+      
+        svg.select(".x.axis")
+          .transition()
+          .duration(750)
+          .on("start", function() {
+            d3.select(this).selectAll(".domain").remove();
+          })
+          .call(isCategoricalX ? d3.axisBottom(xScale) : d3.axisBottom(xScale).ticks(10))
+          .on("end", function() {
+            d3.select(this).selectAll(".domain").remove();
+          });
+      
+        svg.select(".y.axis")
+          .transition()
+          .duration(750)
+          .on("start", function() {
+            d3.select(this).selectAll(".domain").remove();
+          })
+          .call(d3.axisLeft(yScale))
+          .on("end", function() {
+            d3.select(this).selectAll(".domain").remove();
+          });
+      
+        let gridGroup = svg.select(".grid");
+        if (gridGroup.empty()) {
+          gridGroup = svg.append("g")
+            .attr("class", "grid")
+            .style("opacity", 0.1);
+        }
+      
+        gridGroup.transition()
+          .duration(750)
+          .on("start", function() {
+            d3.select(this).selectAll(".domain").remove();
+          })
+          .call(d3.axisLeft(yScale).tickSize(-dims.width).tickFormat(""))
+          .on("end", function() {
+            d3.select(this).selectAll(".domain").remove();
+          });
+      
+        svg.selectAll(".dot")
+          .transition()
+          .duration(750)
+          .attr("transform", d => {
+            const jitterX = enableJitter
+              ? isCategoricalX
+                ? (Math.random() - 0.5) * xScale.step() * 0.6
+                : (Math.random() - 0.5) * jitterAmount
+              : 0;
+      
+            const jitterY = enableJitter ? (Math.random() - 0.5) * jitterAmount : 0;
+      
+            const xPos = (isCategoricalX ? xScale(d[xField]) : xScale(d[xField])) + jitterX;
+            const yPos = yScale(d[yField]) + jitterY;
+            return `translate(${xPos}, ${yPos})`;
+          })
+          .style("opacity", d => activeCategories.includes(d[categoryField]) ? 0.7 : 0)
+          .style("display", d => activeCategories.includes(d[categoryField]) ? null : "none");
+      });
+      
+      
+  
+    legendItems.append("path")
+      .attr("transform", `translate(0, 6)`)
+      .attr("d", d => shape.type(enableJitter ? d3.symbolCircle : (shapeMap[d.key] || d3.symbolCircle))())
+      .attr("fill", d => colors[d.key] || "gray");
+  
+    legendItems.append("text")
+      .attr("x", 20)
+      .attr("y", 10)
+      .style("font-size", "14px")
+      .text(d => d.key);
+  
+    let xOffset = 0;
+    legendItems.attr("transform", function() {
+      const itemWidth = this.getBBox().width + 30;
+      const transform = `translate(${xOffset}, 0)`;
+      xOffset += itemWidth;
+      return transform;
+    });
+  
+    const legendBBox = legendGroup.node().getBBox();
+const legendOffset = xLabel ? 35 : 50;
+
+legendGroup.attr(
+  "transform",
+  `translate(${(dims.width - legendBBox.width) / 2}, ${dims.height + margins.bottom - legendOffset})`
+);
+    }
+  },
+  
+  renderBubbleChart({
+    containerId,
+    data,
+    xField,
+    yField,
+    zField,
+    countryField,
+    labelField,
+    colorField = null,
+    title = "",
+    subtitle = "",
+    xLabel = "",
+    yLabel = "",
+    xUnit = "",
+    yUnit = "",
+    zUnit = "",
+    colors = {},
+    margins = { top: 60, right: 90, bottom: 115, left: 90 },
+    width = 1400,
+    height = 900,
+    referenceLines = [],
+    packed = false,
+    splitPacked = false
+  }) {
+    const dims = ChartHelpers.getDimensions(margins, width, height);
+    const svg = ChartHelpers.createSVG(containerId, margins, width, height);
+  
+    const highlightDot = svg.append("circle")
+      .attr("class", "highlight-dot")
+      .attr("r", 0)
+      .attr("fill", "none")
+      .style("pointer-events", "none")
+      .style("display", "none");
+  
+    const sizeExtent = d3.extent(data, d => d[zField]);
+    const sizeScale = d3.scaleSqrt()
+      .domain(sizeExtent)
+      .range([10, 60]);
+  
+    const tooltip = ChartHelpers.createTooltip();
+
+    if (title) {
+      svg.append("text")
+        .attr("x", dims.width / 2)
+        .attr("y", -40)
+        .attr("text-anchor", "middle")
+        .style("font-size", "22px")
+        .style("font-weight", "bold")
+        .text(title);
+    }
+    if (subtitle) {
+      svg.append("text")
+        .attr("x", dims.width / 2)
+        .attr("y", -15)
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("fill", "#777")
+        .text(subtitle);
+    }
+    
+    if (packed) {
+      const simulation = d3.forceSimulation(data)
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("charge", d3.forceManyBody().strength(0))
+        .force("collision", d3.forceCollide(d => sizeScale(d[zField]) + 2));
+    
+      simulation.stop();
+      for (let i = 0; i < 300; ++i) simulation.tick();
+    
+      data.forEach((d, i) => {
+        d.initialX = d.x;
+        d.initialY = d.y;
+        d.offsetX = Math.random() * 2 * Math.PI;
+        d.offsetY = Math.random() * 2 * Math.PI;
+      });
+    
+      const uniqueKeys = Array.from(new Set(data.map(d => d[colorField])));
+      const seriesState = uniqueKeys.map(key => ({ key, active: true }));
+    
+      const node = svg.selectAll("g.bubble-node")
+        .data(data)
+        .enter().append("g")
+        .attr("class", "bubble-node");
+    
+      let highlightedNode = null;
+    
+      node.append("circle")
+        .attr("r", d => sizeScale(d[zField]))
+        .attr("fill", d => colorField ? (colors[d[colorField]] || "#ccc") : "#ccc")
+        .attr("fill-opacity", 0.5)
+        .attr("stroke", d => colorField ? (colors[d[colorField]] || "#ccc") : "#ccc")
+        .attr("stroke-width", 1)
+        .on("mouseover", function (event, d) {
+          highlightedNode = d;
+          const currentCategory = d[colorField];
+    
+          ChartHelpers.showTooltip(
+            event,
+            `<span style="color:${colors[currentCategory]}">&#9679;</span> ${currentCategory}</br>
+             <strong>${d[labelField]}</strong>: ${d[zField]}${yUnit} ${zUnit}`
+          );
+    
+          highlightDot
+            .attr("r", sizeScale(d[zField]) + 4)
+            .attr("fill", colors[currentCategory] || "#000")
+            .attr("fill-opacity", 0.3)
+            .attr("stroke", "none")
+            .style("display", "block");
+    
+          d3.select(this)
+            .attr("stroke", colors[currentCategory] || "#000")
+            .attr("stroke-width", 2);
+    
+          node.transition().style("opacity", nodeData =>
+            nodeData[colorField] === currentCategory ? 1 : 0.1
+          );
+        })
+        .on("mouseout", function (event, d) {
+          highlightedNode = null;
+    
+          ChartHelpers.removeTooltip();
+          highlightDot.style("display", "none");
+    
+          d3.select(this)
+            .attr("stroke", colors[d[colorField]] || "#ccc")
+            .attr("stroke-width", 1);
+    
+          node.transition().style("opacity", nodeData => {
+            const state = seriesState.find(s => s.key === nodeData[colorField]);
+            return state && state.active ? 1 : 0;
+          });
+        });
+    
+      const texts = node.append("text")
+        .text(d => d[labelField])
+        .attr("text-anchor", "middle")
+        .attr("dy", ".35em")
+        .style("font-weight", "bold")
+        .style("font-size", "12px")
+        .style("visibility", "hidden");
+    
+      texts.each(function (d) {
+        const radius = sizeScale(d[zField]);
+        const textWidth = this.getBBox().width;
+    
+        if (textWidth < radius * 2) {
+          d3.select(this).style("visibility", "visible");
+        } else {
+          d3.select(this).remove();
+        }
+      });
+    
+      const floatingSim = d3.forceSimulation(data)
+        .velocityDecay(0.2)
+        .force("x", d3.forceX(d => d.initialX).strength(0.01))
+        .force("y", d3.forceY(d => d.initialY).strength(0.01))
+        .force("collision", d3.forceCollide(d => sizeScale(d[zField]) + 2).strength(0.9))
+        .on("tick", () => {
+          node.attr("transform", d =>
+            `translate(${d.x + (dims.width / 2 - width / 2)}, ${d.y + (dims.height / 2 - height / 2)})`
+          );
+
+          if (highlightedNode) {
+            highlightDot
+              .attr("cx", highlightedNode.x + (dims.width / 2 - width / 2))
+              .attr("cy", highlightedNode.y + (dims.height / 2 - height / 2));
+          }
+        });
+    
+        const amplitude = 10;
+        const frequency = 0.0015;
+        
+        d3.timer((elapsed) => {
+          const activeData = data.filter(d => {
+            const state = seriesState.find(s => s.key === d[colorField]);
+            return state && state.active;
+          });
+        
+          activeData.forEach(d => {
+            d.targetX = d.initialX + Math.sin(elapsed * frequency + d.offsetX) * amplitude;
+            d.targetY = d.initialY + Math.cos(elapsed * frequency + d.offsetY) * amplitude;
+          });
+        
+          floatingSim
+            .nodes(activeData)
+            .force("x", d3.forceX(d => d.targetX).strength(0.01))
+            .force("y", d3.forceY(d => d.targetY).strength(0.01))
+            .alpha(0.1) 
+            .restart();
+        });
+        
+    
+      const legendGroup = svg.append("g").attr("class", "legend-group");
+    
+      const legendItems = legendGroup.selectAll(".legend-item")
+        .data(seriesState)
+        .enter()
+        .append("g")
+        .attr("class", "legend-item")
+        .style("cursor", "pointer")
+        .on("click", function (event, d) {
+          d.active = !d.active;
+    
+          d3.select(this).select("text")
+            .transition()
+            .style("text-decoration", d.active ? "none" : "line-through");
+          d3.select(this).select("circle")
+            .transition()
+            .style("fill-opacity", d.active ? 1 : 0.3);
+    
+          const activeData = data.filter(nodeData => {
+            const state = seriesState.find(s => s.key === nodeData[colorField]);
+            return state && state.active;
+          });
+    
+          node.style("display", nodeData => {
+            const state = seriesState.find(s => s.key === nodeData[colorField]);
+            return state && state.active ? null : "none";
+          });
+    
+          const canvasCenterX = width / 2;
+          const canvasCenterY = height / 2;
+    
+          activeData.forEach(d => {
+            d.initialX = canvasCenterX;
+            d.initialY = canvasCenterY;
+          });
+    
+          floatingSim
+            .nodes(activeData)
+            .force("x", d3.forceX(d => d.initialX).strength(0.05))
+            .force("y", d3.forceY(d => d.initialY).strength(0.05))
+            .alpha(0.9)
+            .restart();
+        })
+        .on("mouseover", function (event, hoveredLegend) {
+          node.transition().style("opacity", nodeData =>
+            nodeData[colorField] === hoveredLegend.key ? 1 : 0.1
+          );
+        })
+        .on("mouseout", function () {
+          node.transition().style("opacity", nodeData => {
+            const state = seriesState.find(s => s.key === nodeData[colorField]);
+            return state && state.active ? 1 : 0;
+          });
+        });
+    
+      legendItems.append("circle")
+        .attr("r", 6)
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .style("fill", d => colors[d.key] || "#ccc");
+    
+      legendItems.append("text")
+        .attr("x", 10)
+        .attr("y", 4)
+        .style("font-size", "14px")
+        .text(d => d.key);
+    
+      let xOffset = 0;
+      legendItems.attr("transform", function () {
+        const itemWidth = this.getBBox().width + 20;
+        const transform = `translate(${xOffset}, 0)`;
+        xOffset += itemWidth;
+        return transform;
+      });
+    
+      const legendBBox = legendGroup.node().getBBox();
+      legendGroup.attr("transform", `translate(${(dims.width - legendBBox.width) / 2}, ${dims.height + 40})`);
+    
+      return;
+    }
+
+    else if (splitPacked) {
+      const grouped = d3.groups(data, d => d[colorField]);
+      const containerBubbles = [];
+    
+      const containerRadiusScale = d3.scaleSqrt()
+        .domain([0, d3.max(grouped, ([, values]) => d3.sum(values, d => d[zField]))])
+        .range([80, 120]);
+    
+      grouped.forEach(([groupKey, values]) => {
+        const totalSize = d3.sum(values, d => d[zField]);
+        containerBubbles.push({
+          key: groupKey,
+          children: values,
+          totalSize
+        });
+      });
+    
+      const simulation = d3.forceSimulation(containerBubbles)
+        .force("x", d3.forceX(dims.width / 2).strength(0.6))
+        .force("y", d3.forceY(dims.height / 2).strength(0.6))
+        .force("charge", d3.forceManyBody().strength(-50))
+        .force("collision", d3.forceCollide(d => containerRadiusScale(d.totalSize) + 2))
+        .stop();
+    
+      for (let i = 0; i < 300; ++i) simulation.tick();
+    
+      const centerX = dims.width / 2;
+      const centerY = dims.height / 2;
+    
+      containerBubbles.forEach(d => {
+        d.initialX = centerX;
+        d.initialY = centerY;
+        d.offsetX = Math.random() * 2 * Math.PI;
+        d.offsetY = Math.random() * 2 * Math.PI;
+      });
+    
+      let highlightedBubble = null;
+      let highlightedGroup = null;
+    
+      const groupNode = svg.selectAll("g.container-bubble")
+        .data(containerBubbles)
+        .enter()
+        .append("g")
+        .attr("class", "container-bubble")
+        .attr("transform", d => `translate(${d.x}, ${d.y})`);
+    
+      groupNode.append("circle")
+        .attr("r", d => containerRadiusScale(d.totalSize))
+        .attr("fill", d => colors[d.key] || "#eee")
+        .attr("fill-opacity", 0.3)
+        .attr("stroke", d => colors[d.key] || "#ccc")
+        .attr("stroke-width", 2)
+        .on("mouseover", function(event, d) {
+          highlightedGroup = d;
+    
+          ChartHelpers.showTooltip(
+            event,
+            `<span style="color:${colors[d.key]}">&#9679;</span> ${d.key}`
+          );
+    
+          highlightDot
+            .attr("r", containerRadiusScale(d.totalSize) + 4)
+            .attr("fill", colors[d.key] || "#000")
+            .attr("fill-opacity", 0.3)
+            .attr("stroke", "none")
+            .style("display", "block")
+            .attr("cx", d.x)
+            .attr("cy", d.y);
+    
+          groupNode.transition().style("opacity", g =>
+            g.key === d.key ? 1 : 0.1
+          );
+        })
+        .on("mouseout", function(event, d) {
+          highlightedGroup = null;
+    
+          ChartHelpers.removeTooltip();
+          highlightDot.style("display", "none");
+    
+          groupNode.transition().style("opacity", g => {
+            const state = seriesState.find(s => s.key === g.key);
+            return state && state.active ? 1 : 0;
+          });
+        });
+    
+      groupNode.each(function (groupData) {
+        const nodeGroup = d3.select(this);
+        const sizeScale = d3.scaleSqrt()
+          .domain(d3.extent(groupData.children, d => d[zField]))
+          .range([10, 30]);
+    
+        const childSim = d3.forceSimulation(groupData.children)
+          .force("x", d3.forceX(0).strength(0.1))
+          .force("y", d3.forceY(0).strength(0.1))
+          .force("collision", d3.forceCollide(d => sizeScale(d[zField]) + 2))
+          .stop();
+    
+        for (let i = 0; i < 150; ++i) childSim.tick();
+    
+        const node = nodeGroup.selectAll(".inner-bubble")
+          .data(groupData.children)
+          .enter()
+          .append("g")
+          .attr("class", "inner-bubble")
+          .attr("transform", d => `translate(${d.x}, ${d.y})`);
+    
+        node.append("circle")
+          .attr("r", d => sizeScale(d[zField]))
+          .attr("fill", colors[groupData.key])
+          .attr("fill-opacity", 0.3)
+          .attr("stroke", colors[groupData.key])
+          .attr("stroke-width", 2)
+          .on("mouseover", function(event, hoveredBubble) {
+            highlightedBubble = hoveredBubble;
+    
+            d3.select(this)
+              .attr("stroke-width", 3);
+    
+            ChartHelpers.showTooltip(
+              event,
+              `<span style="color:${colors[groupData.key]}">&#9679;</span> ${groupData.key}<br/>
+               <strong>${hoveredBubble[labelField]}</strong>: ${hoveredBubble[zField]}${yUnit} ${zUnit}`
+            );
+    
+            highlightDot
+              .attr("r", sizeScale(hoveredBubble[zField]) + 4)
+              .attr("fill", colors[groupData.key] || "#000")
+              .attr("fill-opacity", 0.3)
+              .attr("stroke", "none")
+              .style("display", "block")
+              .attr("cx", hoveredBubble.x + groupData.x)
+              .attr("cy", hoveredBubble.y + groupData.y);
+    
+            groupNode.transition().style("opacity", g =>
+              g.key === groupData.key ? 1 : 0.1
+            );
+          })
+          .on("mouseout", function() {
+            highlightedBubble = null;
+            d3.select(this).attr("stroke-width", 2);
+            ChartHelpers.removeTooltip();
+            highlightDot.style("display", "none");
+    
+            groupNode.transition().style("opacity", g => {
+              const state = seriesState.find(s => s.key === g.key);
+              return state && state.active ? 1 : 0;
+            });
+          });
+    
+        node.append("text")
+          .text(d => d[labelField])
+          .attr("text-anchor", "middle")
+          .attr("dy", ".35em")
+          .style("font-size", "11px")
+          .style("pointer-events", "none")
+          .each(function (d) {
+            const r = sizeScale(d[zField]);
+            if (this.getBBox().width > r * 2) d3.select(this).remove();
+          });
+      });
+    
+      const seriesState = containerBubbles.map(group => ({
+        key: group.key,
+        active: true
+      }));
+    
+      const floatingGroupSim = d3.forceSimulation(containerBubbles)
+        .velocityDecay(0.2)
+        .force("collision", d3.forceCollide(d => containerRadiusScale(d.totalSize) + 4).strength(0.9))
+        .on("tick", () => {
+          groupNode.attr("transform", d => `translate(${d.x}, ${d.y})`);
+    
+          if (highlightedBubble) {
+            const parent = containerBubbles.find(g => g.children.includes(highlightedBubble));
+            if (parent) {
+              highlightDot
+                .attr("cx", highlightedBubble.x + parent.x)
+                .attr("cy", highlightedBubble.y + parent.y);
+            }
+          }
+        });
+    
+      const amplitude = 10;
+      const frequency = 0.0015;
+    
+      d3.timer((elapsed) => {
+        const activeGroups = containerBubbles.filter(group => {
+          const state = seriesState.find(s => s.key === group.key);
+          return state && state.active;
+        });
+    
+        activeGroups.forEach(group => {
+          group.targetX = centerX + Math.sin(elapsed * frequency + group.offsetX) * amplitude;
+          group.targetY = centerY + Math.cos(elapsed * frequency + group.offsetY) * amplitude;
+        });
+    
+        floatingGroupSim
+          .nodes(activeGroups)
+          .force("x", d3.forceX(d => d.targetX).strength(0.05))
+          .force("y", d3.forceY(d => d.targetY).strength(0.05))
+          .alpha(0.2)
+          .restart();
+      });
+    
+      const legendGroup = svg.append("g").attr("class", "legend-group");
+    
+      const legendItems = legendGroup.selectAll(".legend-item")
+        .data(seriesState)
+        .enter()
+        .append("g")
+        .attr("class", "legend-item")
+        .style("cursor", "pointer")
+        .on("click", function (event, d) {
+          d.active = !d.active;
+    
+          d3.select(this).select("text")
+            .transition()
+            .style("text-decoration", d.active ? "none" : "line-through");
+          d3.select(this).select("circle")
+            .transition()
+            .style("fill-opacity", d.active ? 1 : 0.3);
+    
+          groupNode.style("display", g => {
+            const state = seriesState.find(s => s.key === g.key);
+            return state && state.active ? null : "none";
+          });
+    
+          const activeGroups = containerBubbles.filter(group => {
+            const state = seriesState.find(s => s.key === group.key);
+            return state && state.active;
+          });
+    
+          activeGroups.forEach(group => {
+            group.initialX = group.x;
+            group.initialY = group.y;
+            group.vx = 0;
+            group.vy = 0;
+          });
+    
+          floatingGroupSim
+            .nodes(activeGroups)
+            .force("x", d3.forceX(d => d.initialX).strength(0.03))
+            .force("y", d3.forceY(d => d.initialY).strength(0.03))
+            .alpha(0.5)
+            .restart();
+        })
+        .on("mouseover", function (event, hoveredLegend) {
+          groupNode.transition().style("opacity", g =>
+            g.key === hoveredLegend.key ? 1 : 0.1
+          );
+        })
+        .on("mouseout", function () {
+          groupNode.transition().style("opacity", g => {
+            const state = seriesState.find(s => s.key === g.key);
+            return state && state.active ? 1 : 0;
+          });
+        });
+    
+      legendItems.append("circle")
+        .attr("r", 6)
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .style("fill", d => colors[d.key] || "#ccc");
+    
+      legendItems.append("text")
+        .attr("x", 10)
+        .attr("y", 4)
+        .style("font-size", "14px")
+        .text(d => d.key);
+    
+      let xOffset = 0;
+      legendItems.attr("transform", function () {
+        const itemWidth = this.getBBox().width + 20;
+        const transform = `translate(${xOffset}, 0)`;
+        xOffset += itemWidth;
+        return transform;
+      });
+    
+      const legendBBox = legendGroup.node().getBBox();
+      legendGroup.attr("transform", `translate(${(dims.width - legendBBox.width) / 2}, ${dims.height + 40})`);
+    }
+    
+    
+    
+    
+     else {
+    const xExtent = d3.extent(data, d => d[xField]);
+    const yExtent = d3.extent(data, d => d[yField]);
+    const xScale = d3.scaleLinear()
+      .domain([Math.min(60, xExtent[0]), xExtent[1] + 5])
+      .range([0, dims.width]);
+    const yScale = d3.scaleLinear()
+      .domain([0, yExtent[1] + 30])
+      .range([dims.height, 0]);
+  
+    svg.append("g")
+      .attr("transform", `translate(0, ${dims.height})`)
+      .call(d3.axisBottom(xScale).ticks(6).tickFormat(d => d))
+      .call(g => g.select(".domain").remove())
+      .append("text")
+        .attr("class", "axis-label")
+        .attr("x", dims.width / 2)
+        .attr("y", margins.bottom - 40)
+        .attr("fill", "#000")
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .text(xLabel + (xUnit ? ` (${xUnit})` : ""));
+  
+    svg.append("g")
+      .call(d3.axisLeft(yScale).ticks(6).tickFormat(d => d))
+      .call(g => g.select(".domain").remove());
+  
+    svg.append("text")
+      .attr("class", "axis-label")
+      .attr("transform", "rotate(-90)")
+      .attr("x", -dims.height / 2)
+      .attr("y", -margins.left + 40)
+      .attr("fill", "#000")
+      .attr("text-anchor", "middle")
+      .style("font-size", "14px")
+      .text(yLabel + (yUnit ? ` (${yUnit})` : ""));
+  
+    svg.append("g")
+      .attr("class", "grid")
+      .style("opacity", 0.1)
+      .call(d3.axisLeft(yScale).tickSize(-dims.width).tickFormat(""))
+      .call(g => g.select(".domain").remove());
+    svg.append("g")
+      .attr("class", "grid")
+      .attr("transform", `translate(0, ${dims.height})`)
+      .style("opacity", 0.1)
+      .call(d3.axisBottom(xScale).tickSize(-dims.height).tickFormat(""))
+      .call(g => g.select(".domain").remove());
+  
+    referenceLines.forEach(line => {
+      const isX = line.axis === "x";
+      const scale = isX ? xScale : yScale;
+      const length = isX ? dims.height : dims.width;
+      const [x1, x2, y1, y2] = isX
+        ? [scale(line.value), scale(line.value), 0, dims.height]
+        : [0, dims.width, scale(line.value), scale(line.value)];
+      svg.append("line")
+        .attr("x1", x1)
+        .attr("x2", x2)
+        .attr("y1", y1)
+        .attr("y2", y2)
+        .style("stroke", "black")
+        .style("stroke-dasharray", "4,4");
+      svg.append("text")
+        .attr("x", isX ? scale(line.value) + 5 : dims.width - 5)
+        .attr("y", isX ? 15 : scale(line.value) - 5)
+        .attr("text-anchor", isX ? "start" : "end")
+        .style("font-size", "14px")
+        .style("font-style", "italic")
+        .text(line.label);
+    });
+  
+    const bubbles = svg.selectAll(".bubble")
+      .data(data)
+      .enter()
+      .append("g")
+      .attr("class", "bubble")
+      .attr("transform", d => `translate(${xScale(d[xField])}, ${yScale(d[yField])})`);
+    bubbles.append("circle")
+      .attr("r", d => sizeScale(d[zField]))
+      .attr("fill", d => colorField ? (colors[d[colorField]] || "#ccc") : "#ccc")
+      .attr("fill-opacity", 0.6)
+      .attr("stroke", d => colorField ? (colors[d[colorField]] || "#ccc") : "#ccc")
+      .attr("stroke-width", 1)
+      .on("mouseover", function(event, d) {
+        d3.select(this).attr("fill-opacity", 0.9);
+        ChartHelpers.showTooltip(event,
+          `<strong>${d[countryField]}</strong><br/>
+           <strong>${xField}</strong>: ${d[xField]}${xUnit}<br/>
+           <strong>${yField}</strong>: ${d[yField]}${yUnit}<br/>
+           <strong>${zField}</strong>: ${d[zField]}${zUnit}<br/>`
+        );
+        highlightDot
+          .attr("cx", xScale(d[xField]))
+          .attr("cy", yScale(d[yField]))
+          .attr("r", sizeScale(d[zField]) + 4)
+          .attr("fill", colorField ? (colors[d[colorField]] || "#ccc") : "#ccc")
+          .style("display", "block");
+      })
+      .on("mouseout", function() {
+        d3.select(this).attr("fill-opacity", 0.6);
+        ChartHelpers.removeTooltip();
+        highlightDot.style("display", "none");
+      });
+    bubbles.append("text")
+      .text(d => d[labelField])
+      .attr("text-anchor", "middle")
+      .attr("dy", ".35em")
+      .style("font-weight", "bold")
+      .style("font-size", "12px");
+    }
   }
-
-};
-
+}
 
 window.renderLineChart = ChartRenderers.renderLineChart;
 window.renderAreaChart = ChartRenderers.renderAreaChart;
 window.renderColumnChart = ChartRenderers.renderColumnChart;
 window.renderBarChart = ChartRenderers.renderBarChart;
 window.renderPieChart = ChartRenderers.renderPieChart;
-// renderScatterChart
-// renderBubble Chart
+window.renderScatterChart = ChartRenderers.renderScatterChart;
+window.renderBubbleChart = ChartRenderers.renderBubbleChart;

@@ -36,6 +36,8 @@ namespace ChartRendererApp.Controllers
                 "scatter-basic" => "_ScatterBasic",
                 "scatter-jitter" => "_ScatterJitter",
                 "bubble-basic" => "_BubbleBasic",
+                "bubble-packed" => "_BubblePacked",
+                "bubble-split-packed" => "_BubbleSplitPacked",
 
                 // Default fallback
                 _ => "_ChartNotFound"
