@@ -1,6 +1,5 @@
 @* Views/Charts/_ColumnBasic.cshtml *@
 
-
 <div class="card shadow-sm mt-3" id="chartCard">
     <div class="card-header">
         <h4 id="chartTitle"><strong>Basic Column</strong></h4>
@@ -10,5 +9,31 @@
     </div>
 </div>
 
-<script src="/js/charts/chartRenderer.js"></script>
-<script src="/js/charts/column-basic.js"></script>
+<script src="/js/chartRenderer.js"></script>
+
+<script>
+    renderColumnChart({
+        data: [
+            { country: "USA", Corn: 387749, Wheat: 45321 },
+            { country: "China", Corn: 280000, Wheat: 140000 },
+            { country: "Brazil", Corn: 129000, Wheat: 10000 },
+            { country: "EU", Corn: 64300, Wheat: 140500 },
+            { country: "Argentina", Corn: 54000, Wheat: 19500 },
+            { country: "India", Corn: 34300, Wheat: 113500 }
+        ],
+        containerId: "#chartCard",
+        title: "Corn vs wheat estimated production for 2023",
+        xLabel: "",
+        yLabel: "1000 metric tons (MT)",
+        yUnit: "(1000 MT)",
+        xField: "country",
+        series: ["Corn", "Wheat"],
+        colors: {
+            Corn: "#4dabf7",
+            Wheat: "#5f3dc4"
+        },
+        showLabels: true,
+        stacked: false,
+        percentage: false
+    });
+</script>

@@ -53,13 +53,13 @@ const ChartHelpers = {
 
 const ChartRenderers = {
   renderLineChart({
-    containerId,
-    data,
+    data = [],
+    containerId = "",
     title = "",
-    xField,
-    yLabel = "",
     xLabel = "",
+    yLabel = "",
     yUnit = "",
+    xField = "",
     series = [],
     colors = {},
     showLabels = false,
@@ -357,13 +357,13 @@ const ChartRenderers = {
   },
 
   renderAreaChart({
-    containerId,
-    data,
+    data = [],
+    containerId = "",
     title = "",
-    xField,
-    yLabel = "",
     xLabel = "",
+    yLabel = "",
     yUnit = "",
+    xField = "",
     series = [],
     colors = {},
     showLabels = false,
@@ -1030,17 +1030,17 @@ const ChartRenderers = {
   },
  
   renderColumnChart({
-    data,
-    containerId,
+    data = [],
+    containerId = "",
     title = "",
-    xField,
-    yField,
-    groups = null,
-    series = [],
-    colors = {},
     xLabel = "",
     yLabel = "",
     yUnit = "",
+    xField = "",
+    yField = "",
+    series = [],
+    groups,
+    colors = {},
     showLabels = false,
     stacked = false,
     percentage = false,
@@ -1897,15 +1897,15 @@ grid
   },
 
   renderBarChart({
-    containerId,
-    data,
+    data = [],
+    containerId = "",
     title = "",
-    yField,
-    series = [],
-    colors = {},
     xLabel = "",
     yLabel = "",
     xUnit = "",
+    yField = "",
+    series = [],
+    colors = {},
     showLabels = false,
     stacked = false,
     margins = ChartHelpers.defaultMargins,
@@ -2219,8 +2219,8 @@ grid
   },
 
   renderPieChart({
-    data,
-    containerId,
+    data = [],
+    containerId = "",
     title = "",
     colorPalette = d3.schemeCategory10,
     innerRadiusRatio = 0,
@@ -2349,9 +2349,13 @@ grid
             .style("stroke-width", "2px")
             .style("fill", "none");
 
+          const labelOffset = 5;
+          const adjustedX = midAngle < Math.PI ? x + labelOffset : x - labelOffset;
+
           pieGroup.append("text")
             .attr("class", "slice-role")
-            .attr("transform", `translate(${x}, ${y})`)
+            .attr("transform", `translate(${adjustedX}, ${y})`)
+
             .attr("text-anchor", anchor)
             .attr("alignment-baseline", "middle")
             .style("font-size", "14px")
@@ -2381,9 +2385,13 @@ grid
               .style("stroke-width", "2px")
               .style("fill", "none");
 
+            const labelOffset = 5;
+            const adjustedX = side === "right" ? pos.x + labelOffset : pos.x - labelOffset;
+
             pieGroup.append("text")
               .attr("class", "slice-role")
-              .attr("transform", `translate(${pos.x}, ${pos.y})`)
+              .attr("transform", `translate(${adjustedX}, ${pos.y})`)
+
               .attr("text-anchor", side === "right" ? "start" : "end")
               .attr("alignment-baseline", "middle")
               .style("font-size", "14px")
@@ -2553,24 +2561,24 @@ grid
   },
 
   renderScatterChart({
-    containerId,
-    data,
-    xField,
-    yField,
-    categoryField,
+    data = [],
+    containerId = "",
     title = "",
     xLabel = "",
     yLabel = "",
     xUnit = "",
     yUnit = "",
+    xField = "",
+    yField = "",
+    categoryField = "",
     colors = {},
     shapeMap = {},
+    enableJitter = false,
+    jitterAmount = 5,
+    forceCategoricalX = false,
     margins = { top: 60, right: 90, bottom: 115, left: 90 },
     width = 1400,
     height = 900,
-    enableJitter = false,
-    jitterAmount = 5,
-    forceCategoricalX = false
   }) {
     const dims = ChartHelpers.getDimensions(margins, width, height);
     const svg = ChartHelpers.createSVG(containerId, margins, width, height);
@@ -2878,28 +2886,28 @@ legendGroup.attr(
   },
   
   renderBubbleChart({
-    containerId,
-    data,
-    xField,
-    yField,
-    zField,
-    countryField,
-    labelField,
-    colorField = null,
+    data = [],
+    containerId = "",
     title = "",
-    subtitle = "",
     xLabel = "",
     yLabel = "",
     xUnit = "",
     yUnit = "",
     zUnit = "",
+    xField = "",
+    yField = "",
+    zField = "",
+    colorField = "",
+    countryField = "",
+    labelField = "",
     colors = {},
+    referenceLines,
+    packed = false,
+    splitPacked = false,
     margins = { top: 60, right: 90, bottom: 115, left: 90 },
     width = 1400,
     height = 900,
-    referenceLines = [],
-    packed = false,
-    splitPacked = false
+    
   }) {
     const dims = ChartHelpers.getDimensions(margins, width, height);
     const svg = ChartHelpers.createSVG(containerId, margins, width, height);
@@ -2926,15 +2934,6 @@ legendGroup.attr(
         .style("font-size", "22px")
         .style("font-weight", "bold")
         .text(title);
-    }
-    if (subtitle) {
-      svg.append("text")
-        .attr("x", dims.width / 2)
-        .attr("y", -15)
-        .attr("text-anchor", "middle")
-        .style("font-size", "14px")
-        .style("fill", "#777")
-        .text(subtitle);
     }
     
     if (packed) {

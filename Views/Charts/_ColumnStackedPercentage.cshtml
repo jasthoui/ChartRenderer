@@ -10,5 +10,30 @@
     </div>
 </div>
 
-<script src="/js/charts/chartRenderer.js"></script>
-<script src="/js/charts/column-stacked-percentage.js"></script>
+<script src="/js/chartRenderer.js"></script>
+
+<script>
+    renderColumnChart({
+        data: [
+            { year: "2021", Apples: 30, Oranges: 20, Bananas: 10 },
+            { year: "2022", Apples: 50, Oranges: 25, Bananas: 25 },
+            { year: "2023", Apples: 20, Oranges: 40, Bananas: 40 },
+        ],
+        containerId: "#chartCard",
+        title: "Fruit Sales Share by Year",
+        xLabel: "",
+        yLabel: "Percentage",
+        yUnit: "",
+        xField: "year",
+        yField: "",
+        series: ["Apples", "Oranges", "Bananas"],
+        colors: {
+            Apples: "#ff4d4f",
+            Oranges: "#ffa940",
+            Bananas: "#ffec3d"
+        },
+        showLabels: false,
+        stacked: true,
+        percentage: true
+  });
+</script>

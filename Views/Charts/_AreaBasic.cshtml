@@ -1,23 +1,34 @@
 @* Views/Charts/_AreaBasic.cshtml *@
 
-
+<!-- Chart container card -->
 <div class="card shadow-sm mt-3" id="chartCard">
+    <!-- Card header with chart title -->
     <div class="card-header">
         <h4 id="chartTitle"><strong>Area Chart</strong></h4>
     </div>
+
+    <!-- Card body containing the chart container div -->
     <div class="card-body">
         <div id="areaChartContainer"></div>
     </div>
 </div>
 
-<script src="/js/charts/chartRenderer.js"></script>
+<!-- Handles rendering the chart based on the given data and settings -->
+<script src="/js/chartRenderer.js"></script>
 
 <script>
+    // Call the function to render the chart with specified dataset and settings
     renderAreaChart({
+        // Generate the dataset dynamically using an IIFE (Immediately Invoked Function Expression)
         data: (function() {
+            
+            // Define the range of years for the data timeline
             const startYear = 1940;
             const endYear = 2024;
             const numYears = endYear - startYear + 1;
+
+            // Sample dataset for the chart
+            // 'null' represents missing or unavailable data that specific year
             const usaSeries = [
                 null, null, null, null, null, 2, 9, 13, 50, 170, 299, 438, 841,
                 1169, 1703, 2422, 3692, 5543, 7345, 12298, 18638, 22229, 25540,
@@ -40,26 +51,50 @@
                 5527, 5215, 4858, 4750, 4650, 4600, 4500, 4490, 4300, 4350, 4330,
                 4310, 4495, 4477, 4489, 4380
             ];
+
+            // Generate a list of years between startYear and endYear
             const years = Array.from({ length: numYears }, (_, i) => startYear + i);
+            
+            // Combine the year with corresponding values from each series into a single object
             return years.map((year, index) => ({
                 year: year,
                 USA: usaSeries[index],
                 USSR: ussrSeries[index]
             }));
         })(),
+
+        // ID of the container where the chart will be rendered
         containerId: "#chartCard",
+        
+        // Title of the chart
         title: "US and USSR Nuclear Stockpiles",
+        
+        // Labels for the axes (can be empty if not required)
         xLabel: "",
         yLabel: "Warheads",
+        
+        // Unit to display with Y-axis values (can be empty if not required)
         yUnit: " warheads",
+        
+        // Field to use for X-axis (can be empty if not required)
         xField: "year",
+        
+        // Keys in the dataset that represent each series
         series: ["USA", "USSR"],
+        
+        // Color mapping for each series (hex color codes)
         colors: {
             USA: "#2caffe",
             USSR: "#544fc5"
         },
+        
+        // Whether to display value labels on the chart
         showLabels: false,
+        
+        // Whether to stack the series vertically
         stacked: false,
+        
+        // Whether to flip the axes
         inverted: false
     }); 
 </script>

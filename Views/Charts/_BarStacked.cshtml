@@ -1,64 +1,63 @@
 @* Views/Charts/_BarStacked.cshtml *@
 
-
+<!-- Chart container card -->
 <div class="card shadow-sm mt-3" id="chartCard">
+    <!-- Card header with chart title -->
     <div class="card-header">
         <h4 id="chartTitle"><strong>Stacked Bar</strong></h4>
     </div>
+
+    <!-- Card body containing the chart container div -->
     <div class="card-body">
         <div id="barChartContainer"></div>
     </div>
 </div>
 
-<script src="/js/charts/chartRenderer.js"></script>
+<!-- Handles rendering the chart based on the given data and settings -->
+<script src="/js/chartRenderer.js"></script>
 
 <script>
+    // Call the function to render the chart with specified dataset and settings
     renderBarChart({
+        // Sample dataset for the chart
         data: [
-            {
-                month: "January",
-                "Conventional vehicles": 12213,
-                "Null-emission vehicles": 2106,
-                "Motorcycles": 74
-            },
-            {
-                month: "February",
-                "Conventional vehicles": 12721,
-                "Null-emission vehicles": 2398,
-                "Motorcycles": 27
-            },
-            {
-                month: "March",
-                "Conventional vehicles": 15242,
-                "Null-emission vehicles": 3046,
-                "Motorcycles": 52
-            },
-            {
-                month: "April",
-                "Conventional vehicles": 16518,
-                "Null-emission vehicles": 3195,
-                "Motorcycles": 93
-            },
-            {
-                month: "May",
-                "Conventional vehicles": 25037,
-                "Null-emission vehicles": 4916,
-                "Motorcycles": 1272
-            }
+            {month: "January", "Conventional vehicles": 12213, "Null-emission vehicles": 2106, "Motorcycles": 74}
+            {month: "February", "Conventional vehicles": 12721, "Null-emission vehicles": 2398, "Motorcycles": 27}
+            {month: "March", "Conventional vehicles": 15242, "Null-emission vehicles": 3046, "Motorcycles": 52}
+            {month: "April", "Conventional vehicles": 16518, "Null-emission vehicles": 3195, "Motorcycles": 93}
+            {month: "May", "Conventional vehicles": 25037, "Null-emission vehicles": 4916, "Motorcycles": 1272}
         ],
+
+        // ID of the container where the chart will be rendered
         containerId: "#chartCard",
+
+        // Title of the chart
         title: "Ferry passengers by vehicle type 2024",
+
+        // Labels for the axes (can be empty if not required)
         xLabel: "",
         yLabel: "",
+
+        // Unit to display with X-axis values (can be empty if not required)
         xUnit: "",
+
+        // Field to use for Y-axis (can be empty if not required)
         yField: "month",
+
+        // Keys in the dataset that represent each series
         series: ["Conventional vehicles", "Null-emission vehicles", "Motorcycles"],
+        
+        // Color mapping for each series (hex color codes)
         colors: {
             "Conventional vehicles": "#74DD82",
             "Null-emission vehicles": "#4433AA",
             "Motorcycles": "#55B6FF"
         },
+
+         // Whether to display value labels on the chart
         showLabels: true,
+
+        // Whether to stack the series horizontally
         stacked: true
     });
 </script>

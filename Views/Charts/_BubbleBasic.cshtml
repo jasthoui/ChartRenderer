@@ -1,14 +1,90 @@
 @* Views/Charts/_BubbleBasic.cshtml *@
 
-
+<!-- Chart container card -->
 <div class="card shadow-sm mt-3" id="chartCard">
+    <!-- Card header with chart title -->
     <div class="card-header">
         <h4 id="chartTitle"><strong>Bubble Chart</strong></h4>
     </div>
+
+    <!-- Card body containing the chart container div -->
     <div class="card-body">
         <div id="bubbleChartContainer"></div>
     </div>
 </div>
 
-<script src="/js/charts/chartRenderer.js"></script>
-<script src="/js/charts/bubble-basic.js"></script>
+<!-- Handles rendering the chart based on the given data and settings -->
+<script src="/js/chartRenderer.js"></script>
+
+<script>
+    // Call the function to render the chart with specified dataset and settings
+    renderBubbleChart({
+        // Sample dataset for the chart
+        data: [
+            { country: "United States", code: "US", fat: 65.5, sugar: 126.4, group: "North America", obesity: 35.3 },
+            { country: "New Zealand", code: "NZ", fat: 64, sugar: 80, group: "Oceania", obesity: 30.8 },
+            { country: "Portugal", code: "PT", fat: 63, sugar: 50, group: "Europe", obesity: 28.5 },
+            { country: "Hungary", code: "HU", fat: 66, sugar: 50, group: "Europe", obesity: 32.4 },
+            { country: "United Kingdom", code: "UK", fat: 70, sugar: 95, group: "Europe", obesity: 27.8 },
+            { country: "France", code: "FR", fat: 74, sugar: 75, group: "Europe", obesity: 23.9 },
+            { country: "Italy", code: "IT", fat: 69, sugar: 50, group: "Europe", obesity: 19.9 },
+            { country: "Norway", code: "NO", fat: 73, sugar: 90, group: "Europe", obesity: 24.8 },
+            { country: "Spain", code: "ES", fat: 78, sugar: 75, group: "Europe", obesity: 25.0 },
+            { country: "Netherlands", code: "NL", fat: 80, sugar: 105, group: "Europe", obesity: 20.4 },
+            { country: "Finland", code: "FI", fat: 80, sugar: 95, group: "Europe", obesity: 22.1 },
+            { country: "Russia", code: "RU", fat: 68, sugar: 25, group: "Europe", obesity: 26.4 },
+            { country: "Germany", code: "DE", fat: 85, sugar: 105, group: "Europe", obesity: 23.6 },
+            { country: "Belgium", code: "BE", fat: 95, sugar: 95, group: "Europe", obesity: 22.1 }
+        ],
+
+        // ID of the container where the chart will be rendered
+        containerId: "#chartCard",
+
+        // Title of the chart
+        title: "Sugar and fat intake per country",
+
+        // Labels for the axes (can be empty if not required)
+        xLabel: "Daily Fat Intake",
+        yLabel: "Daily Sugar Intake",
+
+        // Unit to display with the axes values (can be empty if not required)
+        xUnit: "g",
+        yUnit: "g",
+
+        // Unit to display for the values represented by bubble size
+        zUnit: "%",
+
+        // Fields to use for the axes (can be empty if not required)
+        xField: "fat",
+        yField: "sugar",
+        
+        // Field to use to determine the size of each bubble
+        zField: "obesity",
+
+        // Fields to determine color grouping and labeling
+        colorField: "group",
+        countryField: "country", 
+        labelField: "code",
+
+        // Color mapping for each series (hex color codes)
+        colors: {
+            "North America": "#9db4e0",
+            "Europe": "#a8e6cf",
+            "Oceania": "#ffd3b6",
+            "Asia": "#ffaaa5",
+            "Other": "#d5c1e8"
+        },
+
+        // Lines drawn across the chart to highlight specific values or limits
+        referenceLines: [
+            { axis: "x", value: 65, label: "Safe fat intake 65g/day" },
+            { axis: "y", value: 50, label: "Safe sugar intake 50g/day" }
+        ],
+        
+        // Whether to arrange all bubbles into a single tightly-packed cluster regardless of group
+        packed: false,
+        
+        // Whether to create separate packed clusters for each group category
+        splitPacked: false
+    });
+</script>

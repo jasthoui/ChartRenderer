@@ -1,19 +1,25 @@
 @* Views/Charts/_AreaStacked.cshtml *@
 
-
+<!-- Chart container card -->
 <div class="card shadow-sm mt-3" id="chartCard">
+    <!-- Card header with chart title -->
     <div class="card-header">
         <h4 id="chartTitle"><strong>Stacked Area</strong></h4>
     </div>
+
+    <!-- Card body containing the chart container div -->
     <div class="card-body">
         <div id="areaChartContainer"></div>
     </div>
 </div>
 
-<script src="/js/charts/chartRenderer.js"></script>
+<!-- Handles rendering the chart based on the given data and settings -->
+<script src="/js/chartRenderer.js"></script>
 
 <script>
+    // Call the function to render the chart with specified dataset and settings
     renderAreaChart({
+        // Sample dataset for the chart
         data: [
             { year: 2015, solar: 30, wind: 45, hydro: 80, nuclear: 70, coal: 200, gas: 150 },
             { year: 2016, solar: 40, wind: 50, hydro: 82, nuclear: 72, coal: 190, gas: 155 },
@@ -26,13 +32,27 @@
             { year: 2023, solar: 210, wind: 200, hydro: 97, nuclear: 86, coal: 120, gas: 190 },
             { year: 2024, solar: 250, wind: 220, hydro: 100, nuclear: 88, coal: 110, gas: 195 }
         ],
+
+        // ID of the container where the chart will be rendered
         containerId: "#chartCard",
+
+        // Title of the chart
         title: "Energy Production by Source (2015-2024)",
+
+        // Labels for the axes (can be empty if not required)
         xLabel: "",
         yLabel: "Energy Production (in TWh)",
+
+        // Unit to display with Y-axis values (can be empty if not required)
         yUnit: "TWh",
+
+        // Field to use for X-axis (can be empty if not required)
         xField: "year",
+
+        // Keys in the dataset that represent each series
         series: ["solar", "wind", "hydro", "nuclear", "coal", "gas"],
+        
+        // Color mapping for each series (hex color codes)
         colors: {
             solar: "#f39c12",
             wind: "#3498db",
@@ -41,8 +61,14 @@
             coal: "#2c3e50",
             gas: "#e74c3c"
         },
+
+        // Whether to display value labels on the chart
         showLabels: false,
+
+        // Whether to stack the series vertically
         stacked: true,
+
+        // Whether to flip the axes
         inverted: false
     });
 </script>

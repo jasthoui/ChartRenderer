@@ -10,5 +10,35 @@
     </div>
 </div>
 
-<script src="/js/charts/chartRenderer.js"></script>
-<script src="/js/charts/column-stacked-grouped.js"></script>
+<script src="/js/chartRenderer.js"></script>
+
+<script>
+    renderColumnChart({
+        data: [
+            { medal: "Gold", Norway: 200, Germany: 240, "United States": 280, Canada: 150 },
+            { medal: "Silver", Norway: 180, Germany: 220, "United States": 250, Canada: 140 },
+            { medal: "Bronze", Norway: 160, Germany: 200, "United States": 230, Canada: 120 },
+        ],
+        containerId: "#chartCard",
+        title: "Olympic Games all-time medal table, grouped by continent",
+        xLabel: "",
+        yLabel: "Count medals",
+        yUnit: "medals",
+        xField: "medal",
+        yField: "",
+        series: [],
+        groups: [
+            { groupName: "Partners A", series: ["Germany", "Norway"] },
+            { groupName: "Partners B", series: ["Canada", "United States"] }
+        ],
+        colors: {
+            Germany: "#2caffe",
+            Norway: "#544fc5",
+            Canada: "#00e272",
+            "United States": "#fe6a35"
+        },
+        showLabels: false,
+        stacked: true,
+        percentage: false
+    });
+</script>

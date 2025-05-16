@@ -1,19 +1,25 @@
 @* Views/Charts/_AreaInverted.cshtml *@
 
-
+<!-- Chart container card -->
 <div class="card shadow-sm mt-3" id="chartCard">
+    <!-- Card header with chart title -->
     <div class="card-header">
         <h4 id="chartTitle"><strong>Area Inverted</strong></h4>
     </div>
+
+    <!-- Card body containing the chart container div -->
     <div class="card-body">
         <div id="areaChartContainer"></div>
     </div>
 </div>
 
-<script src="/js/charts/chartRenderer.js"></script>
+<!-- Handles rendering the chart based on the given data and settings -->
+<script src="/js/chartRenderer.js"></script>
 
 <script>
+    // Call the function to render the chart with specified dataset and settings
     renderAreaChart({
+        // Sample dataset for the chart
         data: [
             { year: 2000, Solar: 0.5, Wind: 2.0 },
             { year: 2001, Solar: 0.8, Wind: 2.2 },
@@ -37,19 +43,39 @@
             { year: 2019, Solar: 24.0, Wind: 16.0 },
             { year: 2020, Solar: 25.5, Wind: 17.0 }
         ],
+        
+        // ID of the container where the chart will be rendered
         containerId: "#chartCard",
+        
+        // Title of the chart
         title: "Solar and Wind Energy Production (Inverted Axes)",
+        
+        // Labels for the axes (can be empty if not required)
         xLabel: "Energy Production (GW)",
         yLabel: "",
+        
+        // Unit to display with Y-axis values (can be empty if not required)
         yUnit: "GW",
+        
+        // Field to use for X-axis (can be empty if not required)
         xField: "year",
+        
+        // Keys in the dataset that represent each series
         series: ["Solar", "Wind"],
+
+        // Color mapping for each series (hex color codes)
         colors: {
             Solar: "#f39c12",
             Wind: "#3498db"
         },
+        
+        // Whether to display value labels on the chart
         showLabels: false,
+        
+        // Whether to stack the series vertically
         stacked: false,
+
+        // Whether to flip the axes
         inverted: true
     });
 </script>
