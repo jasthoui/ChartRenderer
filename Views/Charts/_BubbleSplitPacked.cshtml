@@ -13,12 +13,13 @@
     </div>
 </div>
 
-<!-- Handles rendering the chart based on the given data and settings -->
-<script src="/js/chartRenderer.js"></script>
+<!-- D3 + Chart Script Modules -->
+<script type="module">
+    // Handle module loading and chart rendering
+    import { ChartRenderers } from '/js/charts/chartBubbleRenderer.js';
 
-<script>
     // Call the function to render the chart with specified dataset and settings
-    renderBubbleChart({
+    ChartRenderers.renderBubbleChart({
         // Sample dataset for the chart
         data: [
             { "name": "USA", "value": 154, "category": "North America" },

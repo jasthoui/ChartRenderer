@@ -1,56 +1,79 @@
-@* Views/Charts/_LineLabels.cshtml *@
+@* Views/Charts/_LineBasic.cshtml *@
 
-
-<div class="card shadow-sm mt-3" id="chartCard">
+<!-- Chart container card -->
+<div class="card shadow-sm mt-3">
+    <!-- Card header with chart title -->
     <div class="card-header">
-        <h4 id="chartTitle"><strong>With Data Labels</strong></h4>
+        <h4><strong>With Data Labels</strong></h4>
     </div>
+
+    <!-- Card body containing the chart container div -->
     <div class="card-body">
         <div id="lineChartContainer"></div>
     </div>
 </div>
 
-<script src="/js/charts/chartRenderer.js"></script>
+<!-- D3 + Chart Script Modules -->
+<script type="module">
+    // Handle module loading and chart rendering
+    import { ChartRenderers } from '/js/charts/chartLineRenderer.js';
 
-<script>
-    renderLineChart({
+    // Call the function to render the chart with specified dataset and settings
+    ChartRenderers.renderLineChart({
+        // Sample dataset for the chart
         data: [
-            { race: "Bahrain GP", date: new Date(2024, 3, 2), Leclerc: 12, Sainz: 15 },
-            { race: "Saudi GP", date: new Date(2024, 3, 2), Leclerc: 16, Sainz: 0 },
-            { race: "Australia GP", date: new Date(2024, 3, 24), Leclerc: 19, Sainz: 25 },
-            { race: "Japan GP", date: new Date(2024, 4, 7), Leclerc: 12, Sainz: 15 },
-            { race: "China GP", date: new Date(2024, 4, 21), Leclerc: 17, Sainz: 14 },
-            { race: "Miami GP", date: new Date(2024, 5, 5), Leclerc: 22, Sainz: 14 },
-            { race: "Emilia-Romagna GP", date: new Date(2024, 5, 19), Leclerc: 15, Sainz: 10 },
-            { race: "Monaco GP", date: new Date(2024, 5, 26), Leclerc: 25, Sainz: 15 },
-            { race: "Canada GP", date: new Date(2024, 6, 9), Leclerc: 0, Sainz: 0 },
-            { race: "Spain GP", date: new Date(2024, 6, 23), Leclerc: 10, Sainz: 8 },
-            { race: "Austria GP", date: new Date(2024, 6, 30), Leclerc: 2, Sainz: 19 },
-            { race: "Great Britain GP", date: new Date(2024, 7, 7), Leclerc: 0, Sainz: 11 },
-            { race: "Hungary GP", date: new Date(2024, 7, 21), Leclerc: 12, Sainz: 8 },
-            { race: "Belgium GP", date: new Date(2024, 7, 28), Leclerc: 15, Sainz: 8 },
-            { race: "Netherlands GP", date: new Date(2024, 8, 25), Leclerc: 15, Sainz: 10 },
-            { race: "Italy GP", date: new Date(2024, 9, 1), Leclerc: 25, Sainz: 12 },
-            { race: "Azerbaijan GP", date: new Date(2024, 9, 15), Leclerc: 18, Sainz: 0 },
-            { race: "Singapore GP", date: new Date(2024, 9, 22), Leclerc: 10, Sainz: 6 },
-            { race: "United States GP", date: new Date(2024, 10, 20), Leclerc: 30, Sainz: 25 },
-            { race: "Mexico GP", date: new Date(2024, 10, 27), Leclerc: 16, Sainz: 25 },
-            { race: "Brazil GP", date: new Date(2024, 11, 3), Leclerc: 16, Sainz: 4 },
-            { race: "Las Vegas GP", date: new Date(2024, 11, 23), Leclerc: 12, Sainz: 15 },
-            { race: "Qatar GP", date: new Date(2024, 12, 1), Leclerc: 22, Sainz: 13 },
-            { race: "Abu Dhabi GP", date: new Date(2024, 12, 8), Leclerc: 15, Sainz: 18 }
+            { race: "Bahrain GP", Leclerc: 12, Sainz: 15 },
+            { race: "Saudi GP", Leclerc: 16, Sainz: 0 },
+            { race: "Australia GP", Leclerc: 19, Sainz: 25 },
+            { race: "Japan GP", Leclerc: 12, Sainz: 15 },
+            { race: "China GP", Leclerc: 17, Sainz: 14 },
+            { race: "Miami GP", Leclerc: 22, Sainz: 14 },
+            { race: "Emilia-Romagna GP", Leclerc: 15, Sainz: 10 },
+            { race: "Monaco GP", Leclerc: 25, Sainz: 15 },
+            { race: "Canada GP", Leclerc: 0, Sainz: 0 },
+            { race: "Spain GP", Leclerc: 10, Sainz: 8 },
+            { race: "Austria GP", Leclerc: 2, Sainz: 19 },
+            { race: "Great Britain GP", Leclerc: 0, Sainz: 11 },
+            { race: "Hungary GP", Leclerc: 12, Sainz: 8 },
+            { race: "Belgium GP", Leclerc: 15, Sainz: 8 },
+            { race: "Netherlands GP", Leclerc: 15, Sainz: 10 },
+            { race: "Italy GP", Leclerc: 25, Sainz: 12 },
+            { race: "Azerbaijan GP", Leclerc: 18, Sainz: 0 },
+            { race: "Singapore GP", Leclerc: 10, Sainz: 6 },
+            { race: "United States GP", Leclerc: 30, Sainz: 25 },
+            { race: "Mexico GP", Leclerc: 16, Sainz: 25 },
+            { race: "Brazil GP", Leclerc: 16, Sainz: 4 },
+            { race: "Las Vegas GP", Leclerc: 12, Sainz: 15 },
+            { race: "Qatar GP", Leclerc: 22, Sainz: 13 },
+            { race: "Abu Dhabi GP", Leclerc: 15, Sainz: 18 }
         ],
-        containerId: "#chartCard",
+
+        // ID of the container where the chart will be rendered
+        containerId: "#lineChartContainer",
+
+        // Title of the chart
         title: "F1 Points Accumulation: Leclerc vs. Sainz",
+
+        // Labels for the axes (can be empty if not required)
         xLabel: "Race",
         yLabel: "Points",
+        
+        // Unit to display with Y-axis values (can be empty if not required)
         yUnit: " pts",
+        
+        // Field to use for X-axis (can be empty if not required)
         xField: "race",
+        
+        // Keys in the dataset that represent each series
         series: ["Leclerc", "Sainz"],
+        
+        // Color mapping for each series (hex color codes)
         colors: {
             Leclerc: "#fa4b42",
             Sainz: "#2caffe",
         },
+        
+        // Whether to display value labels on the chart
         showLabels: true
     });
 </script>

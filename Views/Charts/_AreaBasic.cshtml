@@ -13,15 +13,15 @@
     </div>
 </div>
 
-<!-- Handles rendering the chart based on the given data and settings -->
-<script src="/js/chartRenderer.js"></script>
+<!-- D3 + Chart Script Modules -->
+<script type="module">
+    // Handle module loading and chart rendering
+    import { ChartRenderers } from '/js/charts/chartAreaRenderer.js';
 
-<script>
     // Call the function to render the chart with specified dataset and settings
-    renderAreaChart({
+    ChartRenderers.renderAreaChart({
         // Generate the dataset dynamically using an IIFE (Immediately Invoked Function Expression)
         data: (function() {
-            
             // Define the range of years for the data timeline
             const startYear = 1940;
             const endYear = 2024;
@@ -64,7 +64,7 @@
         })(),
 
         // ID of the container where the chart will be rendered
-        containerId: "#chartCard",
+        containerId: "#areaChartContainer",
         
         // Title of the chart
         title: "US and USSR Nuclear Stockpiles",

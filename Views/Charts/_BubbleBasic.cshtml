@@ -13,12 +13,13 @@
     </div>
 </div>
 
-<!-- Handles rendering the chart based on the given data and settings -->
-<script src="/js/chartRenderer.js"></script>
+<!-- D3 + Chart Script Modules -->
+<script type="module">
+    // Handle module loading and chart rendering
+    import { ChartRenderers } from '/js/charts/chartBubbleRenderer.js';
 
-<script>
     // Call the function to render the chart with specified dataset and settings
-    renderBubbleChart({
+    ChartRenderers.renderBubbleChart({
         // Sample dataset for the chart
         data: [
             { country: "United States", code: "US", fat: 65.5, sugar: 126.4, group: "North America", obesity: 35.3 },
@@ -38,7 +39,7 @@
         ],
 
         // ID of the container where the chart will be rendered
-        containerId: "#chartCard",
+        containerId: "#bubbleChartContainer",
 
         // Title of the chart
         title: "Sugar and fat intake per country",
@@ -47,7 +48,7 @@
         xLabel: "Daily Fat Intake",
         yLabel: "Daily Sugar Intake",
 
-        // Unit to display with the axes values (can be empty if not required)
+        // Units to display with the axes values (can be empty if not required)
         xUnit: "g",
         yUnit: "g",
 

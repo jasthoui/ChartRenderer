@@ -13,12 +13,13 @@
     </div>
 </div>
 
-<!-- Handles rendering the chart based on the given data and settings -->
-<script src="/js/chartRenderer.js"></script>
+<!-- D3 + Chart Script Modules -->
+<script type="module">
+    // Handle module loading and chart rendering
+    import { ChartRenderers } from '/js/charts/chartAreaRenderer.js';
 
-<script>
     // Call the function to render the chart with specified dataset and settings
-    renderAreaChart({
+    ChartRenderers.renderAreaChart({
         // Sample dataset for the chart
         data: [
             { year: 2000, Solar: 0.5, Wind: 2.0 },
@@ -45,7 +46,7 @@
         ],
         
         // ID of the container where the chart will be rendered
-        containerId: "#chartCard",
+        containerId: "#areaChartContainer",
         
         // Title of the chart
         title: "Solar and Wind Energy Production (Inverted Axes)",

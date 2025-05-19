@@ -1,18 +1,26 @@
 @* Views/Charts/_ColumnBasic.cshtml *@
 
+<!-- Chart container card -->
 <div class="card shadow-sm mt-3" id="chartCard">
+    <!-- Card header with chart title -->
     <div class="card-header">
         <h4 id="chartTitle"><strong>Basic Column</strong></h4>
     </div>
+
+    <!-- Card body containing the chart container div -->
     <div class="card-body">
         <div id="columnChartContainer"></div>
     </div>
 </div>
 
-<script src="/js/chartRenderer.js"></script>
+<!-- D3 + Chart Script Modules -->
+<script type="module">
+    // Handle module loading and chart rendering
+    import { ChartRenderers } from '/js/charts/chartColumnRenderer.js';
 
-<script>
-    renderColumnChart({
+    // Call the function to render the chart with specified dataset and settings
+    ChartRenderers.renderColumnChart({
+        // Sample dataset for the chart
         data: [
             { country: "USA", Corn: 387749, Wheat: 45321 },
             { country: "China", Corn: 280000, Wheat: 140000 },
@@ -21,19 +29,40 @@
             { country: "Argentina", Corn: 54000, Wheat: 19500 },
             { country: "India", Corn: 34300, Wheat: 113500 }
         ],
-        containerId: "#chartCard",
+
+        // ID of the container where the chart will be rendered
+        containerId: "#columnChartContainer",
+        
+        // Title of the chart
         title: "Corn vs wheat estimated production for 2023",
+        
+        // Labels for the axes (can be empty if not required)
         xLabel: "",
         yLabel: "1000 metric tons (MT)",
+        
+        // Unit to display with Y-axis values (can be empty if not required)
         yUnit: "(1000 MT)",
+        
+        // Fields to use for the axes (can be empty if not required)
         xField: "country",
+        yField: "",
+        
+        // Keys in the dataset that represent each series
         series: ["Corn", "Wheat"],
+        
+        // Color mapping for each series (hex color codes)
         colors: {
             Corn: "#4dabf7",
             Wheat: "#5f3dc4"
         },
+        
+        // Whether to display value labels on the chart
         showLabels: true,
+        
+        // Whether to stack the series vertically 
         stacked: false,
+        
+        // Whether to display data as percentage of total
         percentage: false
     });
 </script>

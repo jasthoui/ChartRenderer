@@ -1,60 +1,89 @@
 @* Views/Charts/_ScatterBasic.cshtml *@
 
-
+<!-- Chart container card -->
 <div class="card shadow-sm mt-3" id="chartCard">
+     <!-- Card header with chart title -->
     <div class="card-header">
         <h4 id="chartTitle"><strong>Scatter Plot with Jitter</strong></h4>
     </div>
+
+    <!-- Card body containing the chart container div -->
     <div class="card-body">
         <div id="scatterChartContainer"></div>
     </div>
 </div>
 
-<script src="/js/chartRenderer.js"></script>
+<!-- D3 + Chart Script Modules -->
+<script type="module">
+    // Handle module loading and chart rendering
+    import { ChartRenderers } from '/js/charts/chartScatterRenderer.js';
 
-<script>
-    (() => {
-        const runs = ["Run 1", "Run 2", "Run 3", "Run 4", "Run 5"];
+    // Call the function to render the chart with specified dataset and settings
+    ChartRenderers.renderScatterChart({
+        // Generate the dataset using an IIFE (Immediately Invoked Function Expression)
+        data: (function () {
+            // Define the categories to generate data for
+            const runs = ["Run 1", "Run 2", "Run 3", "Run 4", "Run 5"];
 
-        const getTestData = (label) => {
-            const off = 0.2 + 0.2 * Math.random();
-            return new Array(200).fill(1).map(() => ({
-            runCategory: label,
-            yVal: off + (Math.random() - 0.5) * (Math.random() - 0.5),
-            runLabel: label
-            }));
-        };
+            // Number of data points to generate per category
+            const NUM_POINTS = 200;
 
-        const allData = runs.flatMap(label => getTestData(label));
+            // Function to generate random (x, y) data points for each category
+            const getRandomData = (category) => {
+                // Generate slight base offset to vary clusters
+                const base = 0.2 + 0.2 * Math.random();
+                
+                // Generate a set of random (x, y) data points
+                // x value is the category label itself (to be treated as categorical)
+                // y value is randomized using the base offset for variance
+                return new Array(NUM_POINTS).fill(0).map(() => ({
+                    runCategory: category,
+                    yVal: base + (Math.random() - 0.5) * (Math.random() - 0.5),
+                    runLabel: category
+                }));
+            };
 
-        renderScatterChart({
-            data: allData,  
-            containerId: "#chartCard",
-            title: "Scatter chart with jitter",
-            xLabel: "Run",
-            yLabel: "Measurements",
-            xUnit: "",
-            yUnit: "",
-            xField: "runCategory",
-            yField: "yVal",
-            categoryField: "runLabel",
-            colors: {
-                "Run 1": "rgba(124, 181, 236, 0.5)",
-                "Run 2": "rgba(67, 67, 72, 0.5)",
-                "Run 3": "rgba(144, 237, 125, 0.5)",
-                "Run 4": "rgba(247, 163, 92, 0.5)",
-                "Run 5": "rgba(128, 133, 233, 0.5)",
-            },
-            shapeMap: {
-                "Run 1": d3.symbolCircle,
-                "Run 2": d3.symbolSquare,
-                "Run 3": d3.symbolDiamond,
-                "Run 4": d3.symbolTriangle,
-                "Run 5": d3.symbolCross,
-            },
-            enableJitter: true,
-            jitterAmount: 5,
-            forceCategoricalX: true
-        });
-    })();
+            // Generate and flatten all data from categories
+            return runs.flatMap(category => getRandomData(category));
+        })(),
+
+        // ID of the container where the chart will be rendered 
+        containerId: "#scatterChartContainer",
+
+        // Title of the chart
+        title: "Scatter chart with jitter",
+
+        // Labels for the axes (can be empty if not required)
+        xLabel: "Run",
+        yLabel: "Measurements",
+
+        // Units to display with the axes values (can be empty if not required)
+        xUnit: "",
+        yUnit: "",
+
+        // Fields to use for the axes (can be empty if not required)
+        xField: "runCategory",
+        yField: "yVal",
+
+        // Field to determine the category of each data point
+        categoryField: "runLabel",
+
+        // Color mapping for each category (hex color codes)
+        colors: {
+            "Run 1": "rgba(124, 181, 236, 0.5)",
+            "Run 2": "rgba(67, 67, 72, 0.5)",
+            "Run 3": "rgba(144, 237, 125, 0.5)",
+            "Run 4": "rgba(247, 163, 92, 0.5)",
+             "Run 5": "rgba(128, 133, 233, 0.5)",
+        },
+            
+        // Whether to apply jitter to data points
+        enableJitter: true,
+
+        // Amount of jitter to apply (in pixels)
+        jitterAmount: 5,
+
+        // Whether to treat x-axis as categorical instead of continuous
+        forceCategoricalX: true
+    });
 </script>

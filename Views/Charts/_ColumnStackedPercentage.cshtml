@@ -1,39 +1,66 @@
 @* Views/Charts/_ColumnStackedPercentage.cshtml *@
 
-
+<!-- Chart container card -->
 <div class="card shadow-sm mt-3" id="chartCard">
+    <!-- Card header with chart title -->
     <div class="card-header">
         <h4 id="chartTitle"><strong>Stacked Percentage Column</strong></h4>
     </div>
+    
+    <!-- Card body containing the chart container div -->
     <div class="card-body">
         <div id="columnChartContainer"></div>
     </div>
 </div>
 
-<script src="/js/chartRenderer.js"></script>
+<!-- D3 + Chart Script Modules -->
+<script type="module">
+    // Handle module loading and chart rendering
+    import { ChartRenderers } from '/js/charts/chartColumnRenderer.js';
 
-<script>
-    renderColumnChart({
+    // Call the function to render the chart with specified dataset and settings
+    ChartRenderers.renderColumnChart({
+        // Sample dataset for the chart
         data: [
             { year: "2021", Apples: 30, Oranges: 20, Bananas: 10 },
             { year: "2022", Apples: 50, Oranges: 25, Bananas: 25 },
             { year: "2023", Apples: 20, Oranges: 40, Bananas: 40 },
         ],
-        containerId: "#chartCard",
+
+        // ID of the container where the chart will be rendered
+        containerId: "#columnChartContainer",
+
+        // Title of the chart
         title: "Fruit Sales Share by Year",
+
+        // Labels for the axes (can be empty if not required)
         xLabel: "",
         yLabel: "Percentage",
+
+        // Unit to display with Y-axis values (can be empty if not required)
         yUnit: "",
+
+        // Fields to use for the axes (can be empty if not required)
         xField: "year",
         yField: "",
+
+        // Keys in the dataset that represent each series
         series: ["Apples", "Oranges", "Bananas"],
+
+        // Color mapping for each series (hex color codes)
         colors: {
             Apples: "#ff4d4f",
             Oranges: "#ffa940",
             Bananas: "#ffec3d"
         },
+
+        // Whether to display value labels on the chart
         showLabels: false,
+
+        // Whether to stack the series vertically
         stacked: true,
+
+        // Whether to display values as a percentage of the total
         percentage: true
   });
 </script>

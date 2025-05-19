@@ -1,73 +1,108 @@
 @* Views/Charts/_ScatterBasic.cshtml *@
 
-
+<!-- Chart container card -->
 <div class="card shadow-sm mt-3" id="chartCard">
+     <!-- Card header with chart title -->
     <div class="card-header">
         <h4 id="chartTitle"><strong>Scatter Plot</strong></h4>
     </div>
+
+    <!-- Card body containing the chart container div -->
     <div class="card-body">
         <div id="scatterChartContainer"></div>
     </div>
 </div>
 
-<script src="/js/chartRenderer.js"></script>
+<!-- D3 + Chart Script Modules -->
+<script type="module">
+    // Handle module loading and chart rendering
+    import { ChartRenderers } from '/js/charts/chartScatterRenderer.js';
 
-<script>
-    (() => {
-        const sports = ["Basketball", "Volleyball", "Triathlon"];
-        const NUM_POINTS = 50;
+    // Call the function to render the chart with specified dataset and settings
+    ChartRenderers.renderScatterChart({
+        // Generate the dataset using an IIFE (Immediately Invoked Function Expression)
+        data: (function () {
+            // Define the categories to generate data for
+            const sports = ["Basketball", "Volleyball", "Triathlon"];
+            
+            // Number of data points to generate per category
+            const NUM_POINTS = 50;
 
-        const getRandomData = (sport) => {
-            let heightRange, weightRange;
+            // Function to generate random data entries for a given category
+            const getRandomData = (sport) => {
+                let heightRange, weightRange;
 
-            switch (sport) {
-            case "Basketball":
-                heightRange = [1.85, 2.15];
-                weightRange = [85, 125];
-                break;
-            case "Volleyball":
-                heightRange = [1.80, 2.00];
-                weightRange = [75, 90];
-                break;
-            case "Triathlon":
-                heightRange = [1.60, 1.76];
-                weightRange = [50, 66];
-                break;
-            }
+                // Set value ranges depending on the category
+                switch (sport) {
+                    case "Basketball":
+                        heightRange = [1.85, 2.15];
+                        weightRange = [85, 125];
+                        break;
+                    case "Volleyball":
+                        heightRange = [1.80, 2.00];
+                        weightRange = [75, 90];
+                        break;
+                    case "Triathlon":
+                        heightRange = [1.60, 1.76];
+                        weightRange = [50, 66];
+                        break;
+                }
 
-            return new Array(NUM_POINTS).fill(0).map(() => ({
-                height: +(Math.random() * (heightRange[1] - heightRange[0]) + heightRange[0]).toFixed(2),
-                weight: +(Math.random() * (weightRange[1] - weightRange[0]) + weightRange[0]).toFixed(1),
-                sport: sport
-            }));
-        };
+                // Generate a set of random (x, y) data points within the defined ranges
+                return new Array(NUM_POINTS).fill(0).map(() => ({
+                    height: +(Math.random() * (heightRange[1] - heightRange[0]) + heightRange[0]).toFixed(2),
+                    weight: +(Math.random() * (weightRange[1] - weightRange[0]) + weightRange[0]).toFixed(1),
+                    sport: sport
+                }));
+            };
 
-        const allAthletes = sports.flatMap(sport => getRandomData(sport));
+            // Flatten all generated data arrays into a single dataset
+            return sports.flatMap(sport => getRandomData(sport));
+        })(),
 
-        renderScatterChart({
-            data: allAthletes,
-            containerId: "#chartCard",
-            title: "Olympics athletes by height and weight (Randomized)",
-            xLabel: "Height (m)",
-            yLabel: "Weight (kg)",
-            xUnit: "m",
-            yUnit: "kg",
-            xField: "height",
-            yField: "weight",
-            categoryField: "sport",
-            colors: {
-                Basketball: "#4F8EF7",
-                Volleyball: "#F28C6A",
-                Triathlon: "#8CD17D"
-            },
-            shapeMap: {
-                Basketball: d3.symbolCircle,
-                Volleyball: d3.symbolSquare,
-                Triathlon: d3.symbolTriangle
-            },
-            enableJitter: false,
-            jitterAmount: 0,
-            forceCategoricalX: false
-        });
-    })();
+        // ID of the container where the chart will be rendered 
+        containerId: "#scatterChartContainer",
+        
+        // Title of the chart
+        title: "Olympics athletes by height and weight (Randomized)",
+        
+        // Labels for the axes (can be empty if not required)
+        xLabel: "Height (m)",
+        yLabel: "Weight (kg)",
+        
+        // Units to display with the axes values (can be empty if not required)
+        xUnit: "m",
+        yUnit: "kg",
+        
+        // Fields to use for the axes (can be empty if not required)
+        xField: "height",
+        yField: "weight",
+        
+        // Field to determine the category of each data point
+        categoryField: "sport",
+        
+        // Color mapping for each category (hex color codes)
+        colors: {
+            Basketball: "#4F8EF7",
+            Volleyball: "#F28C6A",
+            Triathlon: "#8CD17D"
+        },
+        
+        // Shape mapping for each category (D3.js symbol types)
+        shapeMap: {
+            Basketball: d3.symbolCircle,
+            Volleyball: d3.symbolSquare,
+            Triathlon: d3.symbolTriangle
+        },
+        
+        // Whether to apply jitter to data points
+        enableJitter: false,
+        
+        // Amount of jitter to apply (in pixels)
+        jitterAmount: 0,
+        
+        // Whether to treat X-axis as categorical instead of continuous
+        forceCategoricalX: false
+    });
 </script>
+

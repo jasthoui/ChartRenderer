@@ -1,19 +1,26 @@
 @* Views/Charts/_PieBasic.cshtml *@
 
-
+<!-- Chart container card -->
 <div class="card shadow-sm mt-3" id="chartCard">
+    <!-- Card header with chart title -->
     <div class="card-header">
         <h4 id="chartTitle"><strong>Pie Chart</strong></h4>
     </div>
+
+    <!-- Card body containing the chart container div -->
     <div class="card-body">
         <div id="pieChartContainer"></div>
     </div>
 </div>
 
-<script src="/js/chartRenderer.js"></script>
+<!-- D3 + Chart Script Modules -->
+<script type="module">
+    // Handle module loading and chart rendering
+    import { ChartRenderers } from '/js/charts/chartPieRenderer.js';
 
-<script>
-    renderPieChart({
+    // Call the function to render the chart with specified dataset and settings
+    ChartRenderers.renderPieChart({
+        // Sample dataset for the chart
         data: [
             { label: "ITQ", value: 3 },
             { label: "Data Scientist", value: 6 },
@@ -21,11 +28,23 @@
             { label: "Data Analyst", value: 2 },
             { label: "Prompt Engineer", value: 1 }
         ],
-        containerId: "#chartCard",
+    
+        // ID of the container where the chart will be rendered
+        containerId: "#pieChartContainer",
+    
+        // Title of the chart
         title: "Open iT Internship Roles (2025)",
+    
+        // Color mapping for each slice (hex color codes)
         colorPalette: ["#2caffe", "#544fc5", "#00e272", "#fe6a35", "#d568fb"],
+    
+        // Radius ratio of the inner circle to the outer circle
         innerRadiusRatio: 0,
+    
+        // Whether to display the total value in the center of the chart
         showCenterTotal: false,
+    
+        // Whether to render the chart as a semi-circle / half pie
         isSemiCircle: false
     });
 </script>

@@ -1,44 +1,70 @@
 @* Views/Charts/_ColumnStackedGroupedcshtml *@
 
-
+<!-- Chart container card -->
 <div class="card shadow-sm mt-3" id="chartCard">
+    <!-- Card header with chart title -->
     <div class="card-header">
         <h4 id="chartTitle"><strong>Stacked and Grouped Column</strong></h4>
     </div>
+
+    <!-- Card body containing the chart container div -->
     <div class="card-body">
         <div id="columnChartContainer"></div>
     </div>
 </div>
 
-<script src="/js/chartRenderer.js"></script>
+<!-- D3 + Chart Script Modules -->
+<script type="module">
+    // Handle module loading and chart rendering
+    import { ChartRenderers } from '/js/charts/chartColumnRenderer.js';
 
-<script>
-    renderColumnChart({
+    // Call the function to render the chart with specified dataset and settings
+    ChartRenderers.renderColumnChart({
+        // Sample dataset for the chart
         data: [
             { medal: "Gold", Norway: 200, Germany: 240, "United States": 280, Canada: 150 },
             { medal: "Silver", Norway: 180, Germany: 220, "United States": 250, Canada: 140 },
             { medal: "Bronze", Norway: 160, Germany: 200, "United States": 230, Canada: 120 },
         ],
-        containerId: "#chartCard",
+        
+        // ID of the container where the chart will be rendered
+        containerId: "#columnChartContainer",
+        
+        // Title of the chart
         title: "Olympic Games all-time medal table, grouped by continent",
+        
+        // Labels for the axes (can be empty if not required)
         xLabel: "",
         yLabel: "Count medals",
+        
+        // Unit to display with Y-axis values (can be empty if not required)
         yUnit: "medals",
+        
+        // Fields to use for the axes (can be empty if not required)
         xField: "medal",
         yField: "",
-        series: [],
+        
+        // Configuration for logical grouping and stacking of the series
         groups: [
             { groupName: "Partners A", series: ["Germany", "Norway"] },
             { groupName: "Partners B", series: ["Canada", "United States"] }
         ],
+        
+        // Color mapping for each series (hex color codes)
         colors: {
             Germany: "#2caffe",
             Norway: "#544fc5",
             Canada: "#00e272",
             "United States": "#fe6a35"
         },
+        
+        // Whether to display value labels on the chart
         showLabels: false,
+        
+        // Whether to stack the series vertically
         stacked: true,
+        
+        // Whether to display values as a percentage of the total
         percentage: false
     });
 </script>

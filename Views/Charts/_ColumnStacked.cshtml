@@ -1,40 +1,67 @@
 @* Views/Charts/_ColumnStacked.cshtml *@
 
-
+<!-- Chart container card -->
 <div class="card shadow-sm mt-3" id="chartCard">
+    <!-- Card header with chart title -->
     <div class="card-header">
         <h4 id="chartTitle"><strong>Stacked Column</strong></h4>
     </div>
+
+    <!-- Card body containing the chart container div -->
     <div class="card-body">
         <div id="columnChartContainer"></div>
     </div>
 </div>
 
-<script src="/js/chartRenderer.js"></script>
+<!-- D3 + Chart Script Modules -->
+<script type="module">
+    // Handle module loading and chart rendering
+    import { ChartRenderers } from '/js/charts/chartColumnRenderer.js';
 
-<script>
-    renderColumnChart({
+    // Call the function to render the chart with specified dataset and settings
+    ChartRenderers.renderColumnChart({
+        // Sample dataset for the chart
         data: [
             { team: "Arsenal", "FA Cup": 14, BPL: 3, CL: 0 },
             { team: "Chelsea", "FA Cup": 8, BPL: 5, CL: 2 },
             { team: "Liverpool", "FA Cup": 8, BPL: 1, CL: 6 },
             { team: "Manchester United", "FA Cup": 12, BPL: 13, CL: 3 }
         ],
-        containerId: "#chartCard",
+
+        // ID of the container where the chart will be rendered
+        containerId: "#columnChartContainer",
+        
+        // Title of the chart
         title: "Major trophies for some English teams",
+        
+        // Labels for the axes (can be empty if not required)
         xLabel: "",
         yLabel: "Count trophies",
+        
+        // Unit to display with Y-axis values (can be empty if not required)
         yUnit: "trophies",
+        
+        // Fields to use for the axes (can be empty if not required)
         xField: "team",
         yField: "",
+
+        // Keys in the dataset that represent each series
         series: ["FA Cup", "BPL", "CL"],
+
+        // Color mapping for each series (hex color codes)
         colors: {
             "BPL": "#5CACF7",
             "FA Cup": "#3F3DBF",
             "CL": "#7ED98D"
         },
+
+        // Whether to display value labels on the chart
         showLabels: true,
+        
+        // Whether to stack the series vertically 
         stacked: true,
+       
+        // Whether to display values as a percentage of the total
         percentage: false
     });
 </script>

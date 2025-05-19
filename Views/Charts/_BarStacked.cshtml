@@ -13,23 +13,24 @@
     </div>
 </div>
 
-<!-- Handles rendering the chart based on the given data and settings -->
-<script src="/js/chartRenderer.js"></script>
+<!-- D3 + Chart Script Modules -->
+<script type="module">
+    // Handle module loading and chart rendering
+    import { ChartRenderers } from '/js/charts/chartBarRenderer.js';
 
-<script>
     // Call the function to render the chart with specified dataset and settings
-    renderBarChart({
+    ChartRenderers.renderBarChart({
         // Sample dataset for the chart
         data: [
-            {month: "January", "Conventional vehicles": 12213, "Null-emission vehicles": 2106, "Motorcycles": 74}
-            {month: "February", "Conventional vehicles": 12721, "Null-emission vehicles": 2398, "Motorcycles": 27}
-            {month: "March", "Conventional vehicles": 15242, "Null-emission vehicles": 3046, "Motorcycles": 52}
-            {month: "April", "Conventional vehicles": 16518, "Null-emission vehicles": 3195, "Motorcycles": 93}
-            {month: "May", "Conventional vehicles": 25037, "Null-emission vehicles": 4916, "Motorcycles": 1272}
+            { month: "January", "Conventional vehicles": 12213, "Null-emission vehicles": 2106, "Motorcycles": 74 },
+            { month: "February", "Conventional vehicles": 12721, "Null-emission vehicles": 2398, "Motorcycles": 27 },
+            { month: "March", "Conventional vehicles": 15242, "Null-emission vehicles": 3046, "Motorcycles": 52 },
+            { month: "April", "Conventional vehicles": 16518, "Null-emission vehicles": 3195, "Motorcycles": 93 },
+            { month: "May", "Conventional vehicles": 25037, "Null-emission vehicles": 4916, "Motorcycles": 1272 }
         ],
 
         // ID of the container where the chart will be rendered
-        containerId: "#chartCard",
+        containerId: "#barChartContainer",
 
         // Title of the chart
         title: "Ferry passengers by vehicle type 2024",

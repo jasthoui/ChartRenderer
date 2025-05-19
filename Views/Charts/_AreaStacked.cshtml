@@ -13,12 +13,13 @@
     </div>
 </div>
 
-<!-- Handles rendering the chart based on the given data and settings -->
-<script src="/js/chartRenderer.js"></script>
+<!-- D3 + Chart Script Modules -->
+<script type="module">
+    // Handle module loading and chart rendering
+    import { ChartRenderers } from '/js/charts/chartAreaRenderer.js';
 
-<script>
     // Call the function to render the chart with specified dataset and settings
-    renderAreaChart({
+    ChartRenderers.renderAreaChart({
         // Sample dataset for the chart
         data: [
             { year: 2015, solar: 30, wind: 45, hydro: 80, nuclear: 70, coal: 200, gas: 150 },
@@ -34,7 +35,7 @@
         ],
 
         // ID of the container where the chart will be rendered
-        containerId: "#chartCard",
+        containerId: "#areaChartContainer",
 
         // Title of the chart
         title: "Energy Production by Source (2015-2024)",
