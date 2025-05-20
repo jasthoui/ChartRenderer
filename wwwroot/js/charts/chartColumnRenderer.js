@@ -818,6 +818,7 @@ grid
         .style("font-weight", "bold")
         .text(title);
     }
+
     if (xLabel) {
       svg.append("text")
         .attr("class", "x label")
@@ -827,6 +828,7 @@ grid
         .style("font-size", "14px")
         .text(xLabel);
     }
+    
     if (yLabel) {
       svg.append("text")
         .attr("class", "y label")

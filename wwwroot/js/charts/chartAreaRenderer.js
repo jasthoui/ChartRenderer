@@ -667,17 +667,17 @@ export const ChartRenderers = {
         }
 
         if (title) {
-        svg.append("text")
-            .attr("x", dims.width / 2)
-            .attr("y", -20)
-            .attr("text-anchor", "middle")
-            .style("font-size", "22px")
-            .style("font-weight", "bold")
-            .text(title);
+            svg.append("text")
+                .attr("x", dims.width / 2)
+                .attr("y", -20)
+                .attr("text-anchor", "middle")
+                .style("font-size", "22px")
+                .style("font-weight", "bold")
+                .text(title);
         }
-        
-        if (xLabel && xLabel !== "") {
-        svg.append("text")
+
+        if (xLabel) {
+            svg.append("text")
             .attr("class", "x label")
             .attr("text-anchor", "middle")
             .attr("x", dims.width / 2)
@@ -685,14 +685,16 @@ export const ChartRenderers = {
             .style("font-size", "14px")
             .text(xLabel);
         }
-
-        svg.append("text")
-        .attr("class", "y label")
-        .attr("text-anchor", "middle")
-        .attr("transform", "rotate(-90)")
-        .attr("x", -dims.height / 2)
-        .attr("y", -margins.left + 30)
-        .style("font-size", "14px")
-        .text(yLabel);
+        
+        if (yLabel) {
+            svg.append("text")
+            .attr("class", "y label")
+            .attr("text-anchor", "middle")
+            .attr("transform", "rotate(-90)")
+            .attr("x", -dims.height / 2)
+            .attr("y", -margins.left + 30)
+            .style("font-size", "14px")
+            .text(yLabel);
+        }
     }
 };

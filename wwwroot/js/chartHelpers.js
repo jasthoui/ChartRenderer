@@ -48,5 +48,11 @@ export const ChartHelpers = {
       .html(html)
       .style("left", (event.pageX + 10) + "px")
       .style("top", (event.pageY - 28) + "px");
+  },
+
+  moveTooltip(event) {
+    d3.select("body").select(".tooltip")
+      .style("left",  (event.pageX + 10) + "px")
+      .style("top",   (event.pageY - 28) + "px");
   }
 };

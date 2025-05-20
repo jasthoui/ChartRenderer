@@ -282,21 +282,25 @@ export const ChartRenderers = {
         .text(title);
     }
 
-    svg.append("text")
-      .attr("class", "x label")
-      .attr("text-anchor", "middle")
-      .attr("x", dims.width / 2)
-      .attr("y", dims.height + margins.bottom - 20)
-      .style("font-size", "14px")
-      .text(xLabel);
+    if (xLabel) {
+      svg.append("text")
+        .attr("class", "x label")
+        .attr("text-anchor", "middle")
+        .attr("x", dims.width / 2)
+        .attr("y", dims.height + margins.bottom - 10)
+        .style("font-size", "14px")
+        .text(xLabel);
+    }
 
-    svg.append("text")
-      .attr("class", "y label")
-      .attr("text-anchor", "middle")
-      .attr("transform", "rotate(-90)")
-      .attr("x", -dims.height / 2)
-      .attr("y", -margins.left + 30)
-      .style("font-size", "14px")
-      .text(yLabel);
+    if (yLabel) {
+      svg.append("text")
+        .attr("class", "y label")
+        .attr("text-anchor", "middle")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -dims.height / 2)
+        .attr("y", -margins.left + 30)
+        .style("font-size", "14px")
+        .text(yLabel);
+    }
   }
 };
